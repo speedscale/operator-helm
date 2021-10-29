@@ -19,5 +19,13 @@ rancher/partner-charts.
 Update the fork branch of speedscale/partner-charts with 'git pull https://github.com/rancher/partner-charts main-source'
 
 Details at https://github.com/rancher/partner-charts/tree/main-source.
+
+The commands should look something like this:
+$ vim packages/speedscale-operator/package.yaml
+$ PACKAGE=speedscale-operator make prepare
+$ make validate
+$ # git commit and push one or more times
+$ make validate
+$ submit PR
 "
 
