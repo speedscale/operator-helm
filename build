@@ -16,7 +16,7 @@ Excellent, you've built the helm chart from the latest version of speedmgmt.
 Now we need to update speedscale/partner-charts and submit a PR to the upstream
 rancher/partner-charts.
 
-Update the fork branch of speedscale/partner-charts with `git pull https://github.com/rancher/partner-charts main-source`
+Update the fork branch of speedscale/partner-charts with 'git pull https://github.com/rancher/partner-charts main-source'
 
 Details at https://github.com/rancher/partner-charts/tree/main-source.
 "
