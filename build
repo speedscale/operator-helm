@@ -11,9 +11,6 @@ cp "${VERSION}/README.md" .
 # bundle it up
 helm package "${VERSION}"
 
-# don't leave a mess
-rm -rf "$VERSION"
-
 echo "
 Excellent, you've built the helm chart from the latest version of speedmgmt.
 Now we need to update speedscale/partner-charts and submit a PR to the upstream
