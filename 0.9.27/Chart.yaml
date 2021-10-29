@@ -7,7 +7,7 @@ appVersion: 0.9.27
 description: Stress test your APIs with real world scenarios.  Collect and replay
   traffic without scripting.
 home: https://speedscale.com
-icon: https://raw.githubusercontent.com/speedscale/assets/main/logo/gold_speedscale_logo_landscape_large.png
+icon: https://raw.githubusercontent.com/speedscale/assets/main/logo/gold_logo_only.png
 keywords:
 - speedscale
 - test
