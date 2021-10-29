@@ -1,8 +1,11 @@
-# Speedscale Operator Helm Chart
+# Speedscale Operator
 
 The [Speedscale](https://www.speedscale.com) Operator is a [Kubernetes operator](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/)
-that watches for deployments to be applied to the cluster and takes action based on annotations.
+that watches for deployments to be applied to the cluster and takes action based on annotations. The operator
+can inject a proxy to capture traffic into or out of applications, or setup an isolation test environment around
+a deployment for testing. The operator itself is a deployment that will be always present on the cluster once
+the helm chart is installed.
 
-This repository stores a Helm chart to apply the operator, though the recommended installation method is to generate Kubernetes manifests
-from the [Speedscale CLI tool](https://github.com/speedscale/speedscale-cli).
+Install the operator through this chart and annotate deployments to record traffic or replay snapshots.
 
+More information available at [docs.speedscale.com](https://docs.speedscale.com).
