@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    helm.sh/hook: post-install
+  creationTimestamp: null
+  name: speedscale-keys-create
+  namespace: speedscale
+spec:
+  template:
+    metadata:
+      creationTimestamp: null
+    spec:
+      containers:
+      - command:
+        - /bin/sh
+        - -ce
+        - |
+          speedctl init --force --api-key {{ .Values.apiKey }} --app-url {{ .Values.appUrl }}
+          speedctl deploy operator --dir ./manifests
+          kubectl apply -f ./manifests/configmap.yaml
+          kubectl apply -f ./manifests/secret.yaml
+          kubectl apply -f ./manifests/webhook.yaml
+        image: gcr.io/sspublic/speedscale-cli:latest
+        imagePullPolicy: Always
+        name: create-secrets
+        resources: {}
+      restartPolicy: Never
+      serviceAccountName: speedscale-control-sa
+status: {}
