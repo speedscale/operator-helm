@@ -3,7 +3,7 @@
 set -e
 
 # generate the helm chart
-VERSION=$(speedmgmt helm)
+VERSION=$(speedmgmt generate helm)
 
 # use the chart's README as this repo's README
 cp "${VERSION}/README.md" .
@@ -21,7 +21,7 @@ Update the fork branch of speedscale/partner-charts with 'git pull https://githu
 Details at https://github.com/rancher/partner-charts/tree/main-source.
 
 The commands should look something like this:
-$ vim packages/speedscale-operator/package.yaml
+$ vim packages/speedscale-operator/package.yaml # to bump the URL and packageVersion
 $ PACKAGE=speedscale-operator make prepare
 $ make validate
 $ # git commit and push one or more times
