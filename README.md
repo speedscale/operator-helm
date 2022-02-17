@@ -8,7 +8,12 @@ the helm chart is installed.
 
 ## Install
 
-Install the operator through this chart and annotate deployments to record traffic or replay snapshots.
+A valid Speedscale API key is required to successfully install the chart.
+
+1. Git clone this project
+1. `cd operator-helm/<VERSION>`
+1. Add Speedscale API key to values.yaml
+1. `helm install speedscale .`
 
 ## Help
 
