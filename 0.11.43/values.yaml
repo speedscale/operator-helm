@@ -1,6 +1,6 @@
 # An API key is required to connect to the Speedscale cloud.
 # If you need a key email support@speedscale.com.
-apiKey: <SPEEDSCALE_API_KEY>
+apiKey: 344e4a510149842d3c09d806e030ded2211a91ae0b11d
 
 image:
   tag: stable
