@@ -14,13 +14,12 @@ spec:
         - /bin/sh
         - -ce
         - |
-          speedctl init --force --api-key {{ .Values.apiKey }} --app-url {{ .Values.appUrl }}
-          speedctl deploy operator --dir ./manifests \
-            || (echo 'speedctl init failed, verify API_KEY is correct' && exit 1)
+          speedctl init --force --api-key {{ .Values.apiKey }} --app-url {{ .Values.appUrl }} || (echo 'speedctl init failed, verify API_KEY is correct' && exit 0)
+          speedctl deploy operator --dir ./manifests
           kubectl apply -f ./manifests/webhook.yaml
           kubectl apply -f ./manifests/configmap.yaml
           kubectl apply -f ./manifests/secret.yaml
-        image: gcr.io/sspublic/speedscale-cli:v0.11.41
+        image: gcr.io/sspublic/speedscale-cli:v0.11.42
         imagePullPolicy: Always
         name: speedscale-cli
         resources: {}
@@ -46,11 +45,10 @@ spec:
         - /bin/sh
         - -ce
         - |
-          speedctl init --force --api-key {{ .Values.apiKey }} --app-url {{ .Values.appUrl }} \
-            || (echo 'speedctl init failed, quitting' && exit 0) # don't let the cleanup job fail or helm won't uninstall properly
+          speedctl init --force --api-key {{ .Values.apiKey }} --app-url {{ .Values.appUrl }} || (echo 'speedctl init failed, quitting' && exit 0)
           speedctl deploy operator --dir ./manifests
           kubectl delete -f ./manifests/webhook.yaml
-        image: gcr.io/sspublic/speedscale-cli:v0.11.41
+        image: gcr.io/sspublic/speedscale-cli:v0.11.42
         imagePullPolicy: Always
         name: speedscale-cli
         resources: {}
