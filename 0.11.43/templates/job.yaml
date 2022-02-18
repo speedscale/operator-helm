@@ -13,13 +13,12 @@ spec:
       - command:
         - /bin/sh
         - -ce
-        - |
-          speedctl init --force --api-key {{ .Values.apiKey }} --app-url {{ .Values.appUrl }} || (echo 'speedctl init failed, verify API_KEY is correct' && exit 0)
-          speedctl deploy operator --dir ./manifests
-          kubectl apply -f ./manifests/webhook.yaml
-          kubectl apply -f ./manifests/configmap.yaml
-          kubectl apply -f ./manifests/secret.yaml
-        image: gcr.io/sspublic/speedscale-cli:v0.11.42
+        - "speedctl init --force --api-key {{ .Values.apiKey }} --app-url {{ .Values.appUrl
+          }} \\\n  && speedctl deploy operator --dir ./manifests \\\n  && kubectl
+          apply -f ./manifests/webhook.yaml \\\n  && kubectl apply -f ./manifests/configmap.yaml
+          \\\n  && kubectl apply -f ./manifests/secret.yaml \\\n\t|| echo 'manifest
+          apply failed, verify API key is correct'\n"
+        image: gcr.io/sspublic/speedscale-cli:v0.11.43
         imagePullPolicy: Always
         name: speedscale-cli
         resources: {}
@@ -45,10 +44,11 @@ spec:
         - /bin/sh
         - -ce
         - |
-          speedctl init --force --api-key {{ .Values.apiKey }} --app-url {{ .Values.appUrl }} || (echo 'speedctl init failed, quitting' && exit 0)
-          speedctl deploy operator --dir ./manifests
-          kubectl delete -f ./manifests/webhook.yaml
-        image: gcr.io/sspublic/speedscale-cli:v0.11.42
+          speedctl init --force --api-key {{ .Values.apiKey }} --app-url {{ .Values.appUrl }} \
+            && speedctl deploy operator --dir ./manifests \
+            && kubectl delete -f ./manifests/webhook.yaml \
+            || echo 'cleanup failed, quitting'
+        image: gcr.io/sspublic/speedscale-cli:v0.11.43
         imagePullPolicy: Always
         name: speedscale-cli
         resources: {}
