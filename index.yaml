@@ -6,11 +6,11 @@ entries:
       catalog.cattle.io/display-name: Speedscale Operator
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
-    appVersion: 0.11.58
-    created: "2022-03-15T11:45:47.406341-04:00"
+    appVersion: 0.11.95
+    created: "2022-03-15T12:32:36.277419-04:00"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
-    digest: 00c492af2568513b996732bad4b2a35f0f138f57507a8fe5e52146f1c4adc209
+    digest: 8cea921bb96a30242124a187258b3cd26d01ce910a8bfa57d71e96e148008f3a
     home: https://speedscale.com
     icon: https://raw.githubusercontent.com/speedscale/assets/main/logo/gold_logo_only.png
     keywords:
@@ -29,15 +29,15 @@ entries:
       name: Speedscale Support
     name: speedscale-operator
     urls:
-    - speedscale-operator-0.11.58.tgz
-    version: 0.11.58
+    - https://speedscale.github.io/operator-helm/speedscale-operator-0.11.95.tgz
+    version: 0.11.95
   - annotations:
       catalog.cattle.io/certified: partner
       catalog.cattle.io/display-name: Speedscale Operator
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 0.11.43
-    created: "2022-03-15T11:45:47.405899-04:00"
+    created: "2022-03-15T12:32:36.276903-04:00"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: fee9a6fc2e8aa87857c083f0aba8170455abacaa17862cc7074d733960529db7
@@ -59,7 +59,7 @@ entries:
       name: Speedscale Support
     name: speedscale-operator
     urls:
-    - speedscale-operator-0.11.43.tgz
+    - https://speedscale.github.io/operator-helm/speedscale-operator-0.11.43.tgz
     version: 0.11.43
   - annotations:
       catalog.cattle.io/certified: partner
@@ -67,7 +67,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 0.9.126
-    created: "2022-03-15T11:45:47.407495-04:00"
+    created: "2022-03-15T12:32:36.277927-04:00"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: ef36b93661655da2bd43f7caf78a8fa90068ae09a7bab372ed9d68df123fe68e
@@ -89,6 +89,6 @@ entries:
       name: Speedscale Support
     name: speedscale-operator
     urls:
-    - speedscale-operator-0.9.126.tgz
+    - https://speedscale.github.io/operator-helm/speedscale-operator-0.9.126.tgz
     version: 0.9.126
-generated: "2022-03-15T11:45:47.405303-04:00"
+generated: "2022-03-15T12:32:36.276268-04:00"

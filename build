@@ -15,11 +15,14 @@ cd $(dirname $0)
 # use the chart's README as this repo's README
 cp "${VERSION}/README.md" .
 
+# add a sample values file for the user to copy
+cp "${VERSION}/values.yaml" .
+
 # bundle it up
 helm package "${VERSION}"
 
 # update index yaml
-helm repo index . --merge index.yaml
+helm repo index . --merge index.yaml --url https://speedscale.github.io/operator-helm/
 
 echo "
 Excellent, you've built the helm chart from the latest version of speedmgmt.
