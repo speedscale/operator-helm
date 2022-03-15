@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 # generate the helm chart
 VERSION=$(speedmgmt generate helm)
 if [[ -z "$VERSION" ]];then
@@ -7,11 +9,17 @@ if [[ -z "$VERSION" ]];then
   exit 1
 fi
 
+# always run from this dir
+cd $(dirname $0)
+
 # use the chart's README as this repo's README
 cp "${VERSION}/README.md" .
 
 # bundle it up
 helm package "${VERSION}"
+
+# update index yaml
+helm repo index . --merge index.yaml
 
 echo "
 Excellent, you've built the helm chart from the latest version of speedmgmt.
