@@ -1,0 +1,20 @@
+# An API key is required to connect to the Speedscale cloud.
+# If you need a key email support@speedscale.com.
+apiKey: ""
+# Speedscale domain to use.
+appUrl: "app.speedscale.com"
+
+# The name of your cluster.
+clusterName: "my-cluster"
+
+# Speedscale components image settings.
+image:
+    registry: gcr.io/speedscale
+    tag: v0.12.1
+    pullPolicy: Always
+
+# Log level for Speedscale components.
+logLevel: "info"
+
+# Namespaces to be watched by Speedscale Operator.
+namespaceSelector: {}
