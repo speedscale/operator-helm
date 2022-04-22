@@ -3,7 +3,7 @@
 set -euo pipefail
 
 # generate the helm chart
-VERSION=$(speedmgmt generate helm)
+VERSION="$(speedmgmt generate helm)"
 if [[ -z "$VERSION" ]];then
   echo "It looks like you're missing a required binary.  This script is intended for Speedscale engineers.  Use the helm command to interact with charts."
   exit 1
