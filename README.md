@@ -89,10 +89,10 @@ _See [helm upgrade](https://helm.sh/docs/helm/helm_upgrade/) for command documen
 A major chart version change (like v1.2.3 -> v2.0.0) indicates that there is an 
 incompatible breaking change needing manual actions.
 
-### From 0.x to 1.x
-This upgrades speedscale-operator to v0.12.0.
+### From version below 0.12.0
+This upgrades speedscale-operator to v0.12.x.
 
-Uninstall the 0.x version and install 1.x from scratch.
+Uninstall the previous release and install the chart from scratch.
 
 ## Help
 
