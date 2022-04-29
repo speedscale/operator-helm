@@ -25,7 +25,12 @@ _See [helm repo](https://helm.sh/docs/helm/helm_repo/) for command documentation
 An API key is required. Sign up for a [free Speedscale trial](https://speedscale.com/free-trial/) if you do not have one.
 
 ```bash
-helm install -n speedscale --create-namespace [RELEASE_NAME] speedscale/speedscale-operator --set apiKey=<YOUR-SPEEDSCALE-API-KEY>
+helm install \
+	-n speedscale
+	--create-namespace \
+	[RELEASE_NAME] \
+	speedscale/speedscale-operator \
+	--set apiKey=<YOUR-SPEEDSCALE-API-KEY>
 ```
 
 _See [helm install](https://helm.sh/docs/helm/helm_install/) for command documentation._
@@ -58,7 +63,6 @@ kubectl -n speedscale delete job speedscale-operator-pre-install
 
 ```bash
 helm -n speedscale uninstall [RELEASE_NAME]
-kubectl -n speedscale delete job speedscale-operator-pre-install
 ```
 
 This removes all the Kubernetes components associated with the chart and deletes the release.

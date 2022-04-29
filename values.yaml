@@ -10,7 +10,7 @@ clusterName: "my-cluster"
 # Speedscale components image settings.
 image:
     registry: gcr.io/speedscale
-    tag: v0.12.56
+    tag: v0.12.75
     pullPolicy: Always
 
 # Log level for Speedscale components.
