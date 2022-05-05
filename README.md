@@ -28,7 +28,7 @@ An API key is required. Sign up for a [free Speedscale trial](https://speedscale
 helm install \
 	-n speedscale \
 	--create-namespace \
-	[RELEASE_NAME] \
+	<RELEASE_NAME> \
 	speedscale/speedscale-operator \
 	--set apiKey=<YOUR-SPEEDSCALE-API-KEY> \
 	--set clusterName=<YOUR-CLUSTER-NAME>
