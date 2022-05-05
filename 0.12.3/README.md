@@ -26,7 +26,7 @@ An API key is required. Sign up for a [free Speedscale trial](https://speedscale
 
 ```bash
 helm install \
-	-n speedscale
+	-n speedscale \
 	--create-namespace \
 	[RELEASE_NAME] \
 	speedscale/speedscale-operator \
@@ -79,7 +79,7 @@ kubectl delete crd trafficreplays.speedscale.com
 
 ```bash
 helm repo update
-helm upgrade [RELEASE_NAME] speedscale/speedscale-operator
+helm -n speedscale upgrade [RELEASE_NAME] speedscale/speedscale-operator
 ```
 
 With Helm v3, CRDs created by this chart are not updated by default 
@@ -92,6 +92,12 @@ _See [helm upgrade](https://helm.sh/docs/helm/helm_upgrade/) for command documen
 
 A major chart version change (like v1.2.3 -> v2.0.0) indicates that there is an 
 incompatible breaking change needing manual actions.
+
+### From version 0.12.2 to 0.12.3
+
+```bash
+kubectl apply --server-side -f https://raw.githubusercontent.com/speedscale/operator-helm/main/0.12.3/templates/crds/trafficreplays.yaml
+```
 
 ### From version below 0.12.0
 This upgrades speedscale-operator to v0.12.x.

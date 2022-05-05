@@ -9,6 +9,8 @@ if [[ -z "$VERSION" ]];then
   exit 1
 fi
 
+VERSION=0.12.3
+
 # always run from this dir
 cd $(dirname $0)
 
