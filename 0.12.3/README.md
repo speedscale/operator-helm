@@ -30,7 +30,8 @@ helm install \
 	--create-namespace \
 	[RELEASE_NAME] \
 	speedscale/speedscale-operator \
-	--set apiKey=<YOUR-SPEEDSCALE-API-KEY>
+	--set apiKey=<YOUR-SPEEDSCALE-API-KEY> \
+	--set clusterName=<YOUR-CLUSTER-NAME>
 ```
 
 _See [helm install](https://helm.sh/docs/helm/helm_install/) for command documentation._
