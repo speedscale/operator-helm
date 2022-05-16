@@ -2,8 +2,8 @@
 
 set -euo pipefail
 
-# generate the helm chart
-VERSION="$(speedmgmt generate helm)"
+# generate the helm chart. Remove any color codes speedmgmt might accidentally insert
+VERSION="$(speedmgmt generate helm | sed -r 's/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g' | tr -d '\n')"
 if [[ -z "$VERSION" ]];then
   echo "It looks like you're missing a required binary.  This script is intended for Speedscale engineers.  Use the helm command to interact with charts."
   exit 1
