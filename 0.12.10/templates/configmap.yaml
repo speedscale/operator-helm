@@ -1,7 +1,7 @@
 ---
 apiVersion: v1
 data:
-  CLI_VERSION: v0.12.257
+  CLI_VERSION: v0.12.258
   CLUSTER_NAME: {{ .Values.clusterName }}
   DLP_CONFIG: {{ .Values.dlp.config }}
   IMAGE_PULL_POLICY: {{ .Values.image.pullPolicy }}

@@ -3,7 +3,7 @@ annotations:
   catalog.cattle.io/display-name: Speedscale Operator
   catalog.cattle.io/release-name: speedscale-operator
 apiVersion: v1
-appVersion: 0.12.257
+appVersion: 0.12.258
 description: Stress test your APIs with real world scenarios.  Collect and replay
   traffic without scripting.
 home: https://speedscale.com
