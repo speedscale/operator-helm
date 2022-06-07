@@ -26,11 +26,12 @@ _See [helm repo](https://helm.sh/docs/helm/helm_repo/) for command documentation
 An API key is required. Sign up for a [free Speedscale trial](https://speedscale.com/free-trial/) if you do not have one.
 
 ```bash
-helm install speedscale-operator speedscale/speedscale-operator \
+helm install \
 	-n speedscale \
 	--create-namespace \
-	--set apiKey=<YOUR-SPEEDSCALE-API-KEY> \
-        --set clusterName=<YOUR-CLUSTER-NAME>
+	[RELEASE_NAME] \
+	speedscale/speedscale-operator \
+	--set apiKey=<YOUR-SPEEDSCALE-API-KEY>
 ```
 
 _See [helm install](https://helm.sh/docs/helm/helm_install/) for command documentation._
