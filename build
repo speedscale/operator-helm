@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-if [[ "$1" == "-h" || $1 == "--help" ]];then
+if [[ "${1-}" == "-h" || ${1-} == "--help" ]];then
   echo "Using speedmgmt, build the helm chart for the latest version of Speedscale."
   echo "Set \$VERSION to explicitly set the chart version."
   exit 0
