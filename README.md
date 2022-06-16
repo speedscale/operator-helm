@@ -55,14 +55,14 @@ After fixing the error, uninstall the helm release, delete the failed job
 and try installing again:
 
 ```bash
-helm -n speedscale uninstall [RELEASE_NAME]
+helm -n speedscale uninstall speedscale-operator
 kubectl -n speedscale delete job speedscale-operator-pre-install
 ```
 
 ## Uninstall Chart
 
 ```bash
-helm -n speedscale uninstall [RELEASE_NAME]
+helm -n speedscale uninstall speedscale-operator
 ```
 
 This removes all the Kubernetes components associated with the chart and deletes the release.
@@ -79,7 +79,7 @@ kubectl delete crd trafficreplays.speedscale.com
 
 ```bash
 helm repo update
-helm -n speedscale upgrade [RELEASE_NAME] speedscale/speedscale-operator
+helm -n speedscale upgrade speedscale-operator speedscale/speedscale-operator
 ```
 
 With Helm v3, CRDs created by this chart are not updated by default
@@ -92,6 +92,20 @@ _See [helm upgrade](https://helm.sh/docs/helm/helm_upgrade/) for command documen
 
 A major chart version change (like v1.2.3 -> v2.0.0) indicates that there is an
 incompatible breaking change needing manual actions.
+
+### Upgrade to v1.0.24
+
+BEFORE UPGRADE:
+
+```bash
+kubectl -n speedscale delete secret speedscale-gcrcreds speedscale-apikey
+kubectl delete validatingwebhookconfigurations.admissionregistration.k8s.io speedscale-operator
+kubectl delete mutatingwebhookconfigurations.admissionregistration.k8s.io speedscale-operator
+```
+
+```bash
+kubectl apply --server-side -f https://raw.githubusercontent.com/speedscale/operator-helm/main/v1.0.24/templates/crds/trafficreplays.yaml
+```
 
 ### Upgrade to 1.0.0
 
