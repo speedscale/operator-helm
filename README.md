@@ -93,7 +93,7 @@ _See [helm upgrade](https://helm.sh/docs/helm/helm_upgrade/) for command documen
 A major chart version change (like v1.2.3 -> v2.0.0) indicates that there is an
 incompatible breaking change needing manual actions.
 
-### Upgrade to 1.0.1
+### Upgrade to v1.0.27
 
 BEFORE UPGRADE:
 
@@ -104,7 +104,7 @@ kubectl delete mutatingwebhookconfigurations.admissionregistration.k8s.io speeds
 ```
 
 ```bash
-kubectl apply --server-side -f https://raw.githubusercontent.com/speedscale/operator-helm/main/1.0.1/templates/crds/trafficreplays.yaml
+kubectl apply --server-side -f https://raw.githubusercontent.com/speedscale/operator-helm/main/v1.0.27/templates/crds/trafficreplays.yaml
 ```
 
 ### Upgrade to 1.0.0
