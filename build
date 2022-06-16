@@ -12,7 +12,7 @@ fi
 cd "$(dirname "$0")"
 
 # get the latest chart version from the existing tarballs
-CURRENT_VERSION=$(find . -depth 1 -type f -name 'speedscale-operator-*' | sort -V | tail -n 1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+CURRENT_VERSION=$(ls speedscale-operator-*.tgz | sort -V | tail -n 1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
 # create the next version of the chart by bumping the last digit
 BUMPED_VERSION=$(echo "$CURRENT_VERSION" | awk -F. '{$NF = $NF + 1} 1' | sed 's/ /./g')
 VERSION=${VERSION:-$BUMPED_VERSION}
@@ -67,4 +67,3 @@ $ make validate
 $ make clean
 $ submit PR
 "
-
