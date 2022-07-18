@@ -20,3 +20,6 @@ metadata:
   creationTimestamp: null
   name: speedscale-operator
   namespace: {{ .Release.Namespace }}
+  {{- if .Values.globalAnnotations }}
+  annotations: {{ toYaml .Values.globalAnnotations | nindent 4 }}
+  {{- end }}

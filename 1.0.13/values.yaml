@@ -25,11 +25,16 @@ dashboardAccess: true
 # Filter Rule to apply to the Speedscale Forwarder
 filterRule: "standard"
 
+globalAnnotations: {}
+    # Example:
+    # annotation.first: value
+    # annotation.second: value
+
 # Data Loss Prevention settings.
 dlp:
-    
+
     # Instructs operator to enable data loss prevention features
     enabled: false
-    
+
     # Configuration for data loss prevention
     config: "standard"

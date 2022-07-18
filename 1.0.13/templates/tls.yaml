@@ -19,6 +19,9 @@ metadata:
   annotations:
     helm.sh/hook: pre-install
     helm.sh/hook-delete-policy: before-hook-creation
+    {{- if .Values.globalAnnotations }}
+{{ toYaml .Values.globalAnnotations | indent 4 }}
+    {{- end }}
   creationTimestamp: null
   name: speedscale-certs
   namespace: {{ .Release.Namespace }}

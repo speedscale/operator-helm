@@ -25,6 +25,9 @@ metadata:
   annotations:
     helm.sh/hook: pre-install
     helm.sh/hook-delete-policy: before-hook-creation
+    {{- if .Values.globalAnnotations }}
+{{ toYaml .Values.globalAnnotations | indent 4}}
+    {{- end }}
   creationTimestamp: null
   name: speedscale-webhook-certs
   namespace: {{ .Release.Namespace }}
@@ -35,6 +38,9 @@ kind: MutatingWebhookConfiguration
 metadata:
   creationTimestamp: null
   name: speedscale-operator
+  {{- if .Values.globalAnnotations }}
+  annotations: {{ toYaml .Values.globalAnnotations | nindent 4 }}
+  {{- end }}
 webhooks:
 - admissionReviewVersions:
   - v1
@@ -71,6 +77,9 @@ kind: ValidatingWebhookConfiguration
 metadata:
   creationTimestamp: null
   name: speedscale-operator-replay
+  {{- if .Values.globalAnnotations }}
+  annotations: {{ toYaml .Values.globalAnnotations | nindent 4 }}
+  {{- end }}
 webhooks:
 - admissionReviewVersions:
   - v1
@@ -101,6 +110,9 @@ kind: MutatingWebhookConfiguration
 metadata:
   creationTimestamp: null
   name: speedscale-operator-replay
+  {{- if .Values.globalAnnotations }}
+  annotations: {{ toYaml .Values.globalAnnotations | nindent 4 }}
+  {{- end }}
 webhooks:
 - admissionReviewVersions:
   - v1

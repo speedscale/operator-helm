@@ -6,6 +6,9 @@ metadata:
     helm.sh/hook: pre-install
     helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
     helm.sh/hook-weight: "4"
+    {{- if .Values.globalAnnotations }}
+{{ toYaml .Values.globalAnnotations | indent 4 }}
+    {{- end }}
   creationTimestamp: null
   name: speedscale-operator-pre-install
   namespace: {{ .Release.Namespace }}
@@ -43,6 +46,9 @@ metadata:
     helm.sh/hook: pre-install
     helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
     helm.sh/hook-weight: "1"
+    {{- if .Values.globalAnnotations }}
+{{ toYaml .Values.globalAnnotations | indent 4 }}
+    {{- end }}
   creationTimestamp: null
   labels:
     app: speedscale-operator
@@ -57,6 +63,9 @@ metadata:
     helm.sh/hook: pre-install
     helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
     helm.sh/hook-weight: "2"
+    {{- if .Values.globalAnnotations }}
+{{ toYaml .Values.globalAnnotations | indent 4 }}
+    {{- end }}
   creationTimestamp: null
   name: speedscale-operator-provisioning
 rules:
@@ -95,6 +104,9 @@ metadata:
     helm.sh/hook: pre-install
     helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
     helm.sh/hook-weight: "3"
+    {{- if .Values.globalAnnotations }}
+{{ toYaml .Values.globalAnnotations | indent 4 }}
+    {{- end }}
   creationTimestamp: null
   name: speedscale-operator-provisioning
 roleRef:

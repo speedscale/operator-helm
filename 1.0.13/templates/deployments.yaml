@@ -4,6 +4,9 @@ kind: Deployment
 metadata:
   annotations:
     operator.speedscale.com/ignore: "true"
+    {{- if .Values.globalAnnotations }}
+{{ toYaml .Values.globalAnnotations | indent 4}}
+    {{- end }}
   creationTimestamp: null
   labels:
     app: speedscale-operator

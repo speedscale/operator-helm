@@ -8,6 +8,9 @@ metadata:
     controlplane.speedscale.com/component: operator
   name: speedscale-operator
   namespace: {{ .Release.Namespace }}
+  {{- if .Values.globalAnnotations }}
+  annotations: {{ toYaml .Values.globalAnnotations | nindent 4 }}
+  {{- end }}
 spec:
   ports:
   - port: 443
