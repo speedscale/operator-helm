@@ -107,6 +107,20 @@ kubectl delete mutatingwebhookconfigurations.admissionregistration.k8s.io speeds
 kubectl apply --server-side -f https://raw.githubusercontent.com/speedscale/operator-helm/main/1.2.0/templates/crds/trafficreplays.yaml
 ```
 
+### Upgrade to 1.1.0
+
+BEFORE UPGRADE:
+
+```bash
+kubectl -n speedscale delete secret speedscale-gcrcreds speedscale-apikey
+kubectl delete validatingwebhookconfigurations.admissionregistration.k8s.io speedscale-operator
+kubectl delete mutatingwebhookconfigurations.admissionregistration.k8s.io speedscale-operator
+```
+
+```bash
+kubectl apply --server-side -f https://raw.githubusercontent.com/speedscale/operator-helm/main/1.1.0/templates/crds/trafficreplays.yaml
+```
+
 ### Upgrade to 1.0.0
 
 ```bash
