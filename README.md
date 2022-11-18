@@ -95,14 +95,6 @@ incompatible breaking change needing manual actions.
 
 ### Upgrade to 1.2.0
 
-BEFORE UPGRADE:
-
-```bash
-kubectl -n speedscale delete secret speedscale-gcrcreds speedscale-apikey
-kubectl delete validatingwebhookconfigurations.admissionregistration.k8s.io speedscale-operator
-kubectl delete mutatingwebhookconfigurations.admissionregistration.k8s.io speedscale-operator
-```
-
 ```bash
 kubectl apply --server-side -f https://raw.githubusercontent.com/speedscale/operator-helm/main/1.2.0/templates/crds/trafficreplays.yaml
 ```
