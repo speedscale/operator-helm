@@ -17,7 +17,7 @@ maintainers:
   email: support@speedscale.com
 icon: https://raw.githubusercontent.com/speedscale/assets/main/logo/gold_logo_only.png
 apiVersion: v1
-appVersion: 1.2.55
+appVersion: 1.2.61
 annotations:
   catalog.cattle.io/certified: partner
   catalog.cattle.io/display-name: Speedscale Operator
