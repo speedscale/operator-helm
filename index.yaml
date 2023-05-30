@@ -6,8 +6,38 @@ entries:
       catalog.cattle.io/display-name: Speedscale Operator
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
+    appVersion: 1.3.66
+    created: "2023-05-30T23:24:39.682566267Z"
+    description: Stress test your APIs with real world scenarios.  Collect and replay
+      traffic without scripting.
+    digest: 948f5f6714415e8ea2c4cd7b67a2d7332e44af6e14f8df35a6256f3c88d18655
+    home: https://speedscale.com
+    icon: https://raw.githubusercontent.com/speedscale/assets/main/logo/gold_logo_only.png
+    keywords:
+    - speedscale
+    - test
+    - testing
+    - regression
+    - reliability
+    - load
+    - replay
+    - network
+    - traffic
+    kubeVersion: '>= 1.17.0-0'
+    maintainers:
+    - email: support@speedscale.com
+      name: Speedscale Support
+    name: speedscale-operator
+    urls:
+    - https://speedscale.github.io/operator-helm/speedscale-operator-1.3.9.tgz
+    version: 1.3.9
+  - annotations:
+      catalog.cattle.io/certified: partner
+      catalog.cattle.io/display-name: Speedscale Operator
+      catalog.cattle.io/release-name: speedscale-operator
+    apiVersion: v1
     appVersion: 1.3.60
-    created: "2023-05-25T18:05:39.300048103Z"
+    created: "2023-05-30T23:24:39.682049044Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: aae69f5620522c4cd295e064c89cbd2db15663eaade331e3ff121600f8b82342
@@ -37,7 +67,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.3.58
-    created: "2023-05-25T18:05:39.299527314Z"
+    created: "2023-05-30T23:24:39.68152878Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: ab1ede50bbf8b425a0926a447650de6b17363f582f600006635728bf0c814e31
@@ -67,7 +97,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.3.55
-    created: "2023-05-25T18:05:39.298484205Z"
+    created: "2023-05-30T23:24:39.681001676Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: c6e82faf5854f999abb40b605617ed2c1cd78e4a2a4acafa5cba43637b2d8918
@@ -97,7 +127,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.3.49
-    created: "2023-05-25T18:05:39.297268743Z"
+    created: "2023-05-30T23:24:39.679884817Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 0a7ee4d8c3a114b0db5303f26126c0e73b028a1f72e3a29d2aba20b8301cef41
@@ -127,7 +157,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.3.45
-    created: "2023-05-25T18:05:39.296769544Z"
+    created: "2023-05-30T23:24:39.678675355Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 12fd04a9ebf2f43517280c71254dcc49cd0bb28a21eaebf41cdcd75a992d2967
@@ -157,7 +187,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.3.33
-    created: "2023-05-25T18:05:39.296268995Z"
+    created: "2023-05-30T23:24:39.678165132Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 22293ab67b3f88ccc5a3dd581222d086f3f06814b1a7c272af78f2c4ed7e3769
@@ -187,7 +217,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.3.22
-    created: "2023-05-25T18:05:39.295762705Z"
+    created: "2023-05-30T23:24:39.677651869Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 54f1852cf3e91a901e132377238ce2cf0d47342fcd1dcd4bd2a5b0be6290ea21
@@ -217,7 +247,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.3.17
-    created: "2023-05-25T18:05:39.295253136Z"
+    created: "2023-05-30T23:24:39.677136245Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: f2c037dc48c5b021b74b9dcb57032bddeaf9e0a4e38517f2270c7f62ef5d24ff
@@ -247,7 +277,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.3.5
-    created: "2023-05-25T18:05:39.294748847Z"
+    created: "2023-05-30T23:24:39.676614671Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 9ca849325511860e42027d71e3b2eb8ddf8f7623494fb07a0d5792a621f22e21
@@ -277,7 +307,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.3.5
-    created: "2023-05-25T18:05:39.291302144Z"
+    created: "2023-05-30T23:24:39.673464919Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 2df9e0b4a7ec34b34d06d6ff12e05051bdf40227b0581f8f284f06d7c887149c
@@ -307,7 +337,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.584
-    created: "2023-05-25T18:05:39.290290506Z"
+    created: "2023-05-30T23:24:39.672406672Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: b8fc589663375a0a8d5cd51be8ebafc022594e8a0dcb3f6c6a9373835149cdcc
@@ -337,7 +367,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.576
-    created: "2023-05-25T18:05:39.28943751Z"
+    created: "2023-05-30T23:24:39.671058896Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 636cbbf99f3063b09b1a26be62fc0801e332d6b53cc54a8f1f182640713f7e21
@@ -367,7 +397,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.575
-    created: "2023-05-25T18:05:39.28889194Z"
+    created: "2023-05-30T23:24:39.670539883Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 8b5203b0fb2b11dd1a5190ec27b789dd6ec503b45941a59cd7f392b71ba8c0e3
@@ -397,7 +427,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.572
-    created: "2023-05-25T18:05:39.287867622Z"
+    created: "2023-05-30T23:24:39.669504736Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: a606b68ed9c4b1173939b746a656128a4e9e3131f95723d36414a24ff032bd98
@@ -427,7 +457,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.570
-    created: "2023-05-25T18:05:39.287367183Z"
+    created: "2023-05-30T23:24:39.668965882Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 41003f325b3127f16512ebe868a48ff8a3086423a80e20b085a1ce3b572a06a7
@@ -457,7 +487,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.568
-    created: "2023-05-25T18:05:39.286865124Z"
+    created: "2023-05-30T23:24:39.668444138Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 3ca961cb6da1cea26a30a6a5457c03c65e2f9c3d859bef3f993aaa8794a74e3b
@@ -487,7 +517,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.551
-    created: "2023-05-25T18:05:39.286353434Z"
+    created: "2023-05-30T23:24:39.667881883Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 00589a4ecd73eb2ed5499c7d26d04dc08c18ce9d921d02d620d9f66278c16ad8
@@ -517,7 +547,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.547
-    created: "2023-05-25T18:05:39.285837985Z"
+    created: "2023-05-30T23:24:39.66736672Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 11d055574b6a8a10ae93e4b39bc822dac3a1d7ed5351a189cefab3f9d7141d14
@@ -547,7 +577,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.535
-    created: "2023-05-25T18:05:39.285298005Z"
+    created: "2023-05-30T23:24:39.666851587Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: c6db38f1138b391450833198575f44cc9db56e8431e58f55110e31e6e7fdc9f6
@@ -577,7 +607,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.519
-    created: "2023-05-25T18:05:39.284744495Z"
+    created: "2023-05-30T23:24:39.666331463Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 561c8d41b2d806796aab8321b45cb177aede4430e25e66c4c1895bde18bb3b16
@@ -607,7 +637,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.515
-    created: "2023-05-25T18:05:39.283603035Z"
+    created: "2023-05-30T23:24:39.66581214Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 133b169b995eb7379f28aa39f969294647f4fab3421838aa93cac61a797efef9
@@ -637,7 +667,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.508
-    created: "2023-05-25T18:05:39.282496524Z"
+    created: "2023-05-30T23:24:39.665281736Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: c56b083572a14943d3c44de11b3d0d457b352a51bc7463cf7ec04729f71b2968
@@ -667,7 +697,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.506
-    created: "2023-05-25T18:05:39.281996315Z"
+    created: "2023-05-30T23:24:39.664708491Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: fc336e4321c35798f4fbfa49cdde189b686d460c4f6712f70ff7e28efa2e7a6f
@@ -697,7 +727,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.494
-    created: "2023-05-25T18:05:39.280956906Z"
+    created: "2023-05-30T23:24:39.662283177Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 5eafdc60e5281635a78bdc00976338c76dd462f42fbe5bece139ca97930e192b
@@ -727,7 +757,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.482
-    created: "2023-05-25T18:05:39.280455897Z"
+    created: "2023-05-30T23:24:39.661762204Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 6ca27bb45a49db662c9c256494afe1a32b6f50baa49708f474e8a0b286736638
@@ -757,7 +787,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.447
-    created: "2023-05-25T18:05:39.279952758Z"
+    created: "2023-05-30T23:24:39.66124301Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: cc55b3de0f1ee92b4a25bdeedcfe1c898266a9214309cf0d0953866c5c467b8f
@@ -787,7 +817,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.416
-    created: "2023-05-25T18:05:39.279445919Z"
+    created: "2023-05-30T23:24:39.660721677Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 19e58e24f68c4c79c20c5d721da8c53c556d6eda170ed24389944cf3fe08d482
@@ -817,7 +847,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.411
-    created: "2023-05-25T18:05:39.27894118Z"
+    created: "2023-05-30T23:24:39.660173813Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: c150f0612ed889f37a0b4e2f77092a26d3ddc38e9bf9179dd09d505df56f8759
@@ -847,7 +877,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.380
-    created: "2023-05-25T18:05:39.2783985Z"
+    created: "2023-05-30T23:24:39.659636208Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 26fd2214ad59ac5afce8918b67edf6849ba10bbd130f6246f2f59ea1466754f3
@@ -877,7 +907,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.352
-    created: "2023-05-25T18:05:39.27786827Z"
+    created: "2023-05-30T23:24:39.658961891Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 793b3769440535dbcae3465b991808507a023afa2728114bb21a125c208751f8
@@ -907,7 +937,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.335
-    created: "2023-05-25T18:05:39.277262839Z"
+    created: "2023-05-30T23:24:39.658448668Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: e37c6e7f1981e7ce7f600d4fc5012333b8521f895b761db3c43e0394b28ea1f7
@@ -937,7 +967,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.312
-    created: "2023-05-25T18:05:39.275882664Z"
+    created: "2023-05-30T23:24:39.657936914Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 72337b58d980fd9e24135d26f6350c4f421fc7b8b7502eedae06ab9319a69081
@@ -967,7 +997,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.296
-    created: "2023-05-25T18:05:39.274939267Z"
+    created: "2023-05-30T23:24:39.657422141Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 32f8fee3d715c5450cf74c84b5ec32ecb825690ffdf52958044bbf48a88d3d36
@@ -997,7 +1027,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.282
-    created: "2023-05-25T18:05:39.273938469Z"
+    created: "2023-05-30T23:24:39.656358613Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: b43ed09d25c3e4e525b12cf380c8f7ffdfdafcb9dce69dacce193abcf100c394
@@ -1027,7 +1057,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.267
-    created: "2023-05-25T18:05:39.27343127Z"
+    created: "2023-05-30T23:24:39.653358415Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 3bcfb63b2c5a769cfc8395642217d13c45737cfa9718a11fc62501a284b05d42
@@ -1057,7 +1087,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.252
-    created: "2023-05-25T18:05:39.27289202Z"
+    created: "2023-05-30T23:24:39.652838961Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 650f1ccb305b20c06168c779c97135468cc45d178b6b63d0fe0c0ab77f8f281e
@@ -1087,7 +1117,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.231
-    created: "2023-05-25T18:05:39.272391691Z"
+    created: "2023-05-30T23:24:39.652310257Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: b15c16c5a09ee4cabca9505632a751904269ccfec47827709ece12dbf162ee21
@@ -1117,7 +1147,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.222
-    created: "2023-05-25T18:05:39.271882491Z"
+    created: "2023-05-30T23:24:39.651752973Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: bc74fd26ec5c0a647aea5ab0195bf55fab98067a406c42876048cb70d8b931cf
@@ -1147,7 +1177,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.195
-    created: "2023-05-25T18:05:39.271376732Z"
+    created: "2023-05-30T23:24:39.65123984Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: c5cd9b907ebaa43d43544c99d7ac193f4f3e556ab63095833c34004bd27ef7fd
@@ -1177,7 +1207,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.183
-    created: "2023-05-25T18:05:39.270862213Z"
+    created: "2023-05-30T23:24:39.650724036Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 1ebcf1f9d150deb7b92ce99d9f0cdfc21cea5f36f1485af29b8b7e5f183c50db
@@ -1207,7 +1237,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.177
-    created: "2023-05-25T18:05:39.270341903Z"
+    created: "2023-05-30T23:24:39.650206623Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 95ab2502719db2b25577715b08da9b709202e17afef17502e92de949a3502d7f
@@ -1237,7 +1267,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.177
-    created: "2023-05-25T18:05:39.269301275Z"
+    created: "2023-05-30T23:24:39.649689299Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 7d1b7f5f8b8c3d9dfbaf8453c7d4497d29a2d5fd092516db8ab55e333de0f360
@@ -1267,7 +1297,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.177
-    created: "2023-05-25T18:05:39.26797928Z"
+    created: "2023-05-30T23:24:39.649094834Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 15374304e2b985a43ed644cc954d4ac991429777661f09c237954ebfacf1cbb6
@@ -1297,7 +1327,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.129
-    created: "2023-05-25T18:05:39.294239918Z"
+    created: "2023-05-30T23:24:39.676050667Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: efd3f56fb7bd9e8c6eeca5feed21aaa383266263712ded86216abb47c0317766
@@ -1327,7 +1357,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.121
-    created: "2023-05-25T18:05:39.293732479Z"
+    created: "2023-05-30T23:24:39.675535223Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 22fe98b946b6440c8d71dc2b27275b96d2e7de07acf956b30a973bf14e3c4b24
@@ -1357,7 +1387,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.89
-    created: "2023-05-25T18:05:39.293190639Z"
+    created: "2023-05-30T23:24:39.67502407Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 1fd57bc6671838167e0123e99f5375b24ebb002b262f97d12b8de0f4159218a5
@@ -1387,7 +1417,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.61
-    created: "2023-05-25T18:05:39.29268927Z"
+    created: "2023-05-30T23:24:39.674522977Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 9927bb27a89cc2c172a4dd07d0c5ea77d38e84115dcfca814a8add57e8f9f8d8
@@ -1417,7 +1447,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.61
-    created: "2023-05-25T18:05:39.29217895Z"
+    created: "2023-05-30T23:24:39.674011483Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 4022fc667e072e476816acb8a231d5ad93d9563907c38590d5ca64d5322fafba
@@ -1447,7 +1477,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.31
-    created: "2023-05-25T18:05:39.288359441Z"
+    created: "2023-05-30T23:24:39.670014949Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: d69b94bd51f6d020bb8418a1f0d4a32752e500c7de4289f6e7b098b5a7f2bbd9
@@ -1477,7 +1507,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.31
-    created: "2023-05-25T18:05:39.281486936Z"
+    created: "2023-05-30T23:24:39.663276534Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 2ffe527261cdb13afd03126747ef4a5d8a745b787703bd066520d945759e370e
@@ -1507,7 +1537,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.22
-    created: "2023-05-25T18:05:39.274437548Z"
+    created: "2023-05-30T23:24:39.656898667Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 18b594790ef7b65744ac5cbcdf70aca4c1cf1e09c79a30a81fd1074b60386741
@@ -1537,7 +1567,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.22
-    created: "2023-05-25T18:05:39.267477351Z"
+    created: "2023-05-30T23:24:39.64856765Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: f6859da9bd4d171047d9dfbc599c6b372fd1a978c0ce8bb79485be6299753ffe
@@ -1567,7 +1597,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.2.7
-    created: "2023-05-25T18:05:39.266988182Z"
+    created: "2023-05-30T23:24:39.647450041Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 8582aebb89c9ddbbb8041e3df9ccc98fd59df019a9cb3efffe488a0bd84bcbb5
@@ -1597,7 +1627,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.1.184
-    created: "2023-05-25T18:05:39.261040494Z"
+    created: "2023-05-30T23:24:39.642222224Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: dbdef8a42ff88ab9f8632832cc131815724ac410f720b2df27bb0671c41c7a2d
@@ -1627,7 +1657,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.1.183
-    created: "2023-05-25T18:05:39.266496483Z"
+    created: "2023-05-30T23:24:39.646205768Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: af09cadc3347b54b7333526b50532b7d197aff5e4562e7e7fb002f801eb65c91
@@ -1657,7 +1687,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.1.166
-    created: "2023-05-25T18:05:39.266003754Z"
+    created: "2023-05-30T23:24:39.645704495Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: f80262df316197f823455adedf10ef1ac34b371682f11c1e6078c15108ac11c0
@@ -1687,7 +1717,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.1.144
-    created: "2023-05-25T18:05:39.265514695Z"
+    created: "2023-05-30T23:24:39.645209482Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: a92ea983f0f2a9f9ab74c5eac6a531af7702cf2c9a8f4654c897c3f609775f46
@@ -1717,7 +1747,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.1.134
-    created: "2023-05-25T18:05:39.264988105Z"
+    created: "2023-05-30T23:24:39.644710989Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 4520ef820b0c9d0a01ffbd701ae634b1906bc0a01a0e1b93d61b846f57a05eb8
@@ -1747,7 +1777,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.1.105
-    created: "2023-05-25T18:05:39.264504096Z"
+    created: "2023-05-30T23:24:39.644184445Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: b48dd18bc5071ee7eab49bede2abec5bc1a143aa6d81ad7d220798996ec982f2
@@ -1777,7 +1807,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.1.86
-    created: "2023-05-25T18:05:39.264012648Z"
+    created: "2023-05-30T23:24:39.643683272Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: f2cd8c284714275d1373994d51da2561d07071b69f3e41085187666426f95764
@@ -1807,7 +1837,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.1.63
-    created: "2023-05-25T18:05:39.263509318Z"
+    created: "2023-05-30T23:24:39.643197399Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 544bdde06da9141daf2d36173854e12e5f738bbe931cd8399bf548dae5e68e10
@@ -1837,7 +1867,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.1.38
-    created: "2023-05-25T18:05:39.261567823Z"
+    created: "2023-05-30T23:24:39.642701116Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 1410ee87950180c4d8802d7f223ebc8a0ac69fa78729d978c96fbb3f17d948ff
@@ -1867,7 +1897,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.1.23
-    created: "2023-05-25T18:05:39.260549165Z"
+    created: "2023-05-30T23:24:39.641717801Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 5ba7c0dd3b7bbfccec811ad6c346b2c3949a240e54f66db31137346e7f3c1b6f
@@ -1897,7 +1927,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.1.22
-    created: "2023-05-25T18:05:39.260058016Z"
+    created: "2023-05-30T23:24:39.641222688Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: bbb2f742c25f37848c6c17d81d2a818e0bb070997468904c75797f627d9fb8aa
@@ -1927,7 +1957,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.0.239
-    created: "2023-05-25T18:05:39.255602845Z"
+    created: "2023-05-30T23:24:39.635364495Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 07fbcbb4df0545f2fbf4628083d0b33b8d7d475f75969b13f60f32ef58e0282a
@@ -1957,7 +1987,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.0.219
-    created: "2023-05-25T18:05:39.254432193Z"
+    created: "2023-05-30T23:24:39.634896733Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 02cbfa34d1b4d07efdbebe9702abe308f1484ca17c9e60561abbdb76f93c249f
@@ -1987,7 +2017,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.0.206
-    created: "2023-05-25T18:05:39.253330384Z"
+    created: "2023-05-30T23:24:39.63442719Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 760d76bcee7d7a0fa4343fae4711f09bfe4568e3e8db8588436fec43e9d602fd
@@ -2017,7 +2047,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.0.196
-    created: "2023-05-25T18:05:39.252238004Z"
+    created: "2023-05-30T23:24:39.633411114Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 75dd40a565a6793bc3c809958e5e1f9657c1b57a8478aa3a2acbe48040ffb7ab
@@ -2047,7 +2077,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: undefined
-    created: "2023-05-25T18:05:39.251772495Z"
+    created: "2023-05-30T23:24:39.632918711Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 2cab785f857338824fd7f08627c2edc561db47bd1142fbd8a00a2c5ec6da55c7
@@ -2077,7 +2107,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.0.183
-    created: "2023-05-25T18:05:39.251221465Z"
+    created: "2023-05-30T23:24:39.631692709Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: bc73a5337e2c45952d4f5fdb7e94089ecd294240ea2499e881ab1ef21dd5143f
@@ -2107,7 +2137,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.0.130
-    created: "2023-05-25T18:05:39.250656345Z"
+    created: "2023-05-30T23:24:39.630447877Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 05779ecd6712a734e37f7c0fec76f6878e99978926c4a370b0564b22492b99b9
@@ -2137,7 +2167,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.0.130
-    created: "2023-05-25T18:05:39.250103525Z"
+    created: "2023-05-30T23:24:39.629892522Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: d3da7638fbc871eb3e3398bb5b56f52b38e413d7bd92b06d6b63551e21f5ac14
@@ -2167,7 +2197,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.0.130
-    created: "2023-05-25T18:05:39.249555835Z"
+    created: "2023-05-30T23:24:39.629012899Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 636aa5f060d02345a9f09859e5dcb46f0d5610910691bb3e3891d763026407e4
@@ -2197,7 +2227,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.0.94
-    created: "2023-05-25T18:05:39.248960794Z"
+    created: "2023-05-30T23:24:39.628464235Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 3edc3711c89bc3ed0afcad7927ed0c1efef7b4974c60c11adb3cde7eccf1d5ea
@@ -2227,7 +2257,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.0.76
-    created: "2023-05-25T18:05:39.248409804Z"
+    created: "2023-05-30T23:24:39.627869179Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 8962e2642248dba9654a9052adf05624fc87625bc46035db5359f084eb4f7abe
@@ -2257,7 +2287,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.0.72
-    created: "2023-05-25T18:05:39.247846604Z"
+    created: "2023-05-30T23:24:39.627331976Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: adfc72485cdbbc11ee45a22dc4dca865acd82b2b491d229c983c7f938d7cc105
@@ -2287,7 +2317,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.0.57
-    created: "2023-05-25T18:05:39.247232203Z"
+    created: "2023-05-30T23:24:39.626780491Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: ca5128e012cdc5916805af82f3690a1d37f3a0867aecefa9642c79c8c4cceb7d
@@ -2317,7 +2347,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.0.57
-    created: "2023-05-25T18:05:39.259574997Z"
+    created: "2023-05-30T23:24:39.640390426Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: a982d5067e2a5ae5a027d755bbb867b72fbec6ee6492b75d842df0b860713d07
@@ -2347,7 +2377,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.0.57
-    created: "2023-05-25T18:05:39.259033617Z"
+    created: "2023-05-30T23:24:39.639316598Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: aeec8407b278a2f171a56fcd9539b277a7780371bd15c09be68f799ee866a910
@@ -2377,7 +2407,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.0.52
-    created: "2023-05-25T18:05:39.258460147Z"
+    created: "2023-05-30T23:24:39.63823027Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: a03c6c4f851ec627c6b579941646b7116f74e0c0b3d4f995f421bb9822cbae89
@@ -2407,7 +2437,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.0.44
-    created: "2023-05-25T18:05:39.257899376Z"
+    created: "2023-05-30T23:24:39.637629774Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 07d069a4ab6774ec819251a4f8a4ce207082179c5502769c838d128617caff94
@@ -2437,7 +2467,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.0.44
-    created: "2023-05-25T18:05:39.257340456Z"
+    created: "2023-05-30T23:24:39.637028298Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 6d639b01498824ca9d067be5daef12171a077cb081cdceae286ef9d53dbf3048
@@ -2467,7 +2497,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.0.41
-    created: "2023-05-25T18:05:39.256760536Z"
+    created: "2023-05-30T23:24:39.636486424Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 38ff755dec03796dd6b782a5e6b737f82e09043db4125843a9ac4b741c40794d
@@ -2497,7 +2527,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.0.29
-    created: "2023-05-25T18:05:39.256197736Z"
+    created: "2023-05-30T23:24:39.635895799Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 1606f3ce8ff6079e8d3cfd861b4cbcb172842ebeb4449778cf5c3b2475ed84b6
@@ -2527,7 +2557,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.0.27
-    created: "2023-05-25T18:05:39.252787664Z"
+    created: "2023-05-30T23:24:39.633955288Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 3fc5103fa8768894538f865a0ec4cb52de832fdeb920b64712eb096d7c4c7168
@@ -2557,7 +2587,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.0.28
-    created: "2023-05-25T18:05:39.244604075Z"
+    created: "2023-05-30T23:24:39.626221527Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 8d55ab17589b0e3637ff983b2988cda017d1edd22d68d987abd12482abe91cf6
@@ -2587,7 +2617,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.0.8
-    created: "2023-05-25T18:05:39.243982683Z"
+    created: "2023-05-30T23:24:39.625659612Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 652ebfa5433d30d30d61ea6d4bb14ab5739b3458bd3165c8a9429d8dd941bed8
@@ -2617,7 +2647,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 1.0.6
-    created: "2023-05-25T18:05:39.239058914Z"
+    created: "2023-05-30T23:24:39.619698646Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: abbfe9970a0c25df0328ee7823a11b1f73f331585c3f6a151961f346362f2d9b
@@ -2647,7 +2677,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 0.12.233
-    created: "2023-05-25T18:05:39.243103838Z"
+    created: "2023-05-30T23:24:39.62483448Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 79c9d9774ed93ec7e05e468d7660bdb1e1191b2b59c2bbe8db22e21c0fd7f490
@@ -2677,7 +2707,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 0.12.190
-    created: "2023-05-25T18:05:39.242611078Z"
+    created: "2023-05-30T23:24:39.622824288Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 3c12310ba417d8fd53dce6b00bd935b88f435d7189902518af80c5a4792d1eac
@@ -2707,7 +2737,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 0.12.184
-    created: "2023-05-25T18:05:39.24212935Z"
+    created: "2023-05-30T23:24:39.622349706Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 4b56e0996f8206e97def0b0afa47918a4489e54a6c2bbfbd4bb77499395a0f43
@@ -2737,7 +2767,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 0.12.162
-    created: "2023-05-25T18:05:39.241632821Z"
+    created: "2023-05-30T23:24:39.621897704Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 588f96119bb864d999c2c46bbf3ab5028ea53c2d6c6c7c9b9590498cc687adf6
@@ -2767,7 +2797,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 0.12.162
-    created: "2023-05-25T18:05:39.240980969Z"
+    created: "2023-05-30T23:24:39.621429942Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 234cc9d99f02412250d2eb3ce665c4587f7db7bd136faea3452daa30613333e9
@@ -2797,7 +2827,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 0.12.160
-    created: "2023-05-25T18:05:39.240556071Z"
+    created: "2023-05-30T23:24:39.621014541Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 7322fe1a1b3100de4ac5d6669b35e1f323b659bb646ef46b2ae6434328370dc2
@@ -2827,7 +2857,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 0.12.110
-    created: "2023-05-25T18:05:39.240140274Z"
+    created: "2023-05-30T23:24:39.62059179Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: c3ba3f9897d9ffa8688593da5ee7130dd5aaf52c8eb5327e895c974f4f806ef8
@@ -2857,7 +2887,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 0.12.75
-    created: "2023-05-25T18:05:39.239670585Z"
+    created: "2023-05-30T23:24:39.620139398Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: ec2f18300a9e46ac204f3f464d0abbcaf0a51ed2152f43709aa284de8e4113c4
@@ -2887,7 +2917,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 0.12.56
-    created: "2023-05-25T18:05:39.234303978Z"
+    created: "2023-05-30T23:24:39.619253445Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 192ff2c97310d972e0ff117dc504a3ca5738fd555c5746eeb603607c9b62c13e
@@ -2917,7 +2947,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 0.12.34
-    created: "2023-05-25T18:05:39.23388294Z"
+    created: "2023-05-30T23:24:39.618775292Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 40a13d3bd4c7045f65202eeb2692ad6929399d9bf4a8c70319b63693d6fda2ec
@@ -2947,7 +2977,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 0.11.95
-    created: "2023-05-25T18:05:39.233442002Z"
+    created: "2023-05-30T23:24:39.61830489Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: 8cea921bb96a30242124a187258b3cd26d01ce910a8bfa57d71e96e148008f3a
@@ -2977,7 +3007,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 0.11.43
-    created: "2023-05-25T18:05:39.233066795Z"
+    created: "2023-05-30T23:24:39.617964851Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: fee9a6fc2e8aa87857c083f0aba8170455abacaa17862cc7074d733960529db7
@@ -3007,7 +3037,7 @@ entries:
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
     appVersion: 0.9.126
-    created: "2023-05-25T18:05:39.243477244Z"
+    created: "2023-05-30T23:24:39.62519091Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
     digest: ef36b93661655da2bd43f7caf78a8fa90068ae09a7bab372ed9d68df123fe68e
@@ -3031,4 +3061,4 @@ entries:
     urls:
     - https://speedscale.github.io/operator-helm/speedscale-operator-0.9.126.tgz
     version: 0.9.126
-generated: "2023-05-25T18:05:39.232605487Z"
+generated: "2023-05-30T23:24:39.617469718Z"
