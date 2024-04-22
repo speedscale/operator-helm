@@ -4,21 +4,14 @@ set -euo pipefail
 
 if [[ "${1-}" == "-h" || ${1-} == "--help" ]];then
   echo "Using speedmgmt, build the helm chart for the latest version of Speedscale."
-  echo "Set \$VERSION to explicitly set the chart version."
   exit 0
 fi
 
 # always run from this dir
 cd "$(dirname "$0")"
 
-# get the latest chart version from the existing tarballs
-CURRENT_VERSION=$(ls speedscale-operator-*.tgz | sort -V | tail -n 1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
-# create the next version of the chart by bumping the last digit
-BUMPED_VERSION=$(echo "$CURRENT_VERSION" | awk -F. '{$NF = $NF + 1} 1' | sed 's/ /./g')
-VERSION=${VERSION:-$BUMPED_VERSION}
-
-echo "last chart version: $CURRENT_VERSION"
-echo "new chart version:  $VERSION"
+VERSION=$(speedmgmt version | awk '{printf $3}')
+VERSION=${VERSION:1}
 
 # generate the helm chart
 echo "generating chart..."
