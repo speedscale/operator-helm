@@ -1,6 +1,0 @@
-Thank you for installing the Speedscale Operator!
-
-Next you'll need to add the Speedscale Proxy Sidecar to your deployments using the 'speedctl install' wizard, or by adding the 'sidecar.speedscale.com/inject: "true"' annotation.
-See the sidecar docs for more information: https://docs.speedscale.com/install/kubernetes-sidecar/
-
-Once your deployment is running the sidecar your service will show up on https://app.speedscale.com/.

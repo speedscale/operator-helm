@@ -27,9 +27,10 @@ if [[ -z "$VERSION" ]];then
   echo "It looks like you're missing a required binary.  This script is intended for Speedscale engineers.  Use the helm command to interact with charts."
   exit 1
 fi
+mv "${VERSION}" "charts/${VERSION}"
 
 # ensure we support the image tag
-IMAGE_TAG=$(yq .image.tag "${VERSION}/values.yaml")
+IMAGE_TAG=$(yq .image.tag "charts/${VERSION}/values.yaml")
 echo "verifying image tag ${IMAGE_TAG}..."
 
 # checking for the image version install script is a hacky way
@@ -37,17 +38,17 @@ echo "verifying image tag ${IMAGE_TAG}..."
 curl -sf "https://downloads.speedscale.com/speedctl/${IMAGE_TAG}/install" > /dev/null
 
 # use the chart's README as this repo's README
-cp "${VERSION}/README.md" .
+cp "charts/${VERSION}/README.md" .
 
 # add a sample values file for the user to copy
-cp "${VERSION}/values.yaml" .
+cp "charts/${VERSION}/values.yaml" .
 
 # bundle it up
 echo "packaging chart..."
-helm package "${VERSION}"
+helm package "charts/${VERSION}" -d charts
 
 # update index yaml
-helm repo index . --merge index.yaml --url https://speedscale.github.io/operator-helm/
+helm repo index ./charts --merge index.yaml --url https://speedscale.github.io/operator-helm/
 
 echo "
 Excellent, you've built the helm chart from the latest version of speedmgmt.
