@@ -41,7 +41,7 @@ echo "packaging chart..."
 helm package "charts/${VERSION}" -d charts
 
 # update index yaml
-helm repo index ./charts --merge index.yaml --url https://speedscale.github.io/operator-helm/
+helm repo index . --merge index.yaml --url https://speedscale.github.io/operator-helm/
 
 echo "
 Excellent, you've built the helm chart from the latest version of speedmgmt.
