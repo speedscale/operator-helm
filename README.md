@@ -75,7 +75,18 @@ _See [helm uninstall](https://helm.sh/docs/helm/helm_uninstall/) for command doc
 CRDs created by this chart are not removed by default and should be manually cleaned up:
 
 ```bash
+kubectl delete crd agenttasks.speedscale.com
 kubectl delete crd trafficreplays.speedscale.com
+```
+
+Sometimes it may be necessary to forcefully remove all resources created by the
+helm chart.  For example, interrupting a `helm install` can leave the cluster in
+a state where associated resources exist but are abandoned preventing a new
+install.  Deleting resources directly ensures that everything is removed:
+
+```
+helm repo update
+helm -n speedscale template speedscale/speedscale-operator | kubectl delete -f -
 ```
 
 ## Upgrading Chart
