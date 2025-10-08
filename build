@@ -12,10 +12,11 @@ cd "$(dirname "$0")"
 
 VERSION=$(speedmgmt version | awk '{printf $3}')
 VERSION=${VERSION:1}
+NETAPP_VERSION=${NETAPP_VERSION:-"v0.0.5"}
 
 # generate the helm chart
 echo "generating chart..."
-speedmgmt generate helm "$VERSION" > /dev/null
+speedmgmt generate helm "$VERSION" -c nettap="$NETAPP_VERSION" > /dev/null
 if [[ -z "$VERSION" ]];then
   echo "It looks like you're missing a required binary.  This script is intended for Speedscale engineers.  Use the helm command to interact with charts."
   exit 1
