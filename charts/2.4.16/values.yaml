@@ -27,7 +27,7 @@ image:
 
 # specify individual component tags
 imageTags:
-  nettap: 
+  nettap: v0.0.5
 
 # Log level for Speedscale components.
 logLevel: "info"
