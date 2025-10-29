@@ -21,7 +21,7 @@ clusterName: "my-cluster"
 image:
   registry: gcr.io/speedscale
   tag: v2.4.66
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
 
 # Individual tags to be used by specific components. If specified here, the operator will use the given tag
 # when creating resources with that component. If not specified, the above default is used.
