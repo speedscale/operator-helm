@@ -1,36 +1,63 @@
+{{- $jobAnnotations := mergeOverwrite (deepCopy (default (dict) .Values.globalAnnotations)) (deepCopy (default (dict) .Values.preInstallJob.annotations)) (dict "helm.sh/hook" "pre-install" "helm.sh/hook-delete-policy" "before-hook-creation,hook-succeeded" "helm.sh/hook-weight" "4") -}}
+{{- $jobLabels := mergeOverwrite (deepCopy (default (dict) .Values.globalLabels)) (deepCopy (default (dict) .Values.preInstallJob.labels)) -}}
+{{- $podAnnotations := mergeOverwrite (deepCopy (default (dict) .Values.globalAnnotations)) (deepCopy (default (dict) .Values.preInstallJob.podAnnotations)) -}}
+{{- $podLabels := mergeOverwrite (deepCopy (default (dict) .Values.globalLabels)) (deepCopy (default (dict) .Values.preInstallJob.podLabels)) -}}
+{{- $jobImageRegistry := .Values.preInstallJob.image.registry | default .Values.image.registry -}}
+{{- $jobImageTag := .Values.preInstallJob.image.tag | default .Values.image.tag -}}
+{{- $jobImagePullPolicy := .Values.preInstallJob.image.pullPolicy | default .Values.image.pullPolicy -}}
+{{- $jobContainerSecurityContext := .Values.globalPodSecurityContext -}}
+{{- if ne .Values.preInstallJob.containerSecurityContext nil -}}
+{{- $jobContainerSecurityContext = .Values.preInstallJob.containerSecurityContext -}}
+{{- end -}}
+{{- $jobPodSecurityContext := .Values.globalSecurityContext -}}
+{{- if ne .Values.preInstallJob.podSecurityContext nil -}}
+{{- $jobPodSecurityContext = .Values.preInstallJob.podSecurityContext -}}
+{{- end -}}
+{{- $jobAffinity := .Values.affinity -}}
+{{- if ne .Values.preInstallJob.affinity nil -}}
+{{- $jobAffinity = .Values.preInstallJob.affinity -}}
+{{- end -}}
+{{- $jobTolerations := .Values.tolerations -}}
+{{- if ne .Values.preInstallJob.tolerations nil -}}
+{{- $jobTolerations = .Values.preInstallJob.tolerations -}}
+{{- end -}}
+{{- $jobNodeSelector := .Values.nodeSelector -}}
+{{- if ne .Values.preInstallJob.nodeSelector nil -}}
+{{- $jobNodeSelector = .Values.preInstallJob.nodeSelector -}}
+{{- end -}}
 ---
 apiVersion: batch/v1
 kind: Job
 metadata:
   annotations:
-    helm.sh/hook: pre-install
-    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
-    helm.sh/hook-weight: "4"
-    {{- if .Values.globalAnnotations }}
-{{ toYaml .Values.globalAnnotations | indent 4}}
+    {{- if $jobAnnotations }}
+{{ toYaml $jobAnnotations | indent 4}}
     {{- end }}
   creationTimestamp: null
   name: speedscale-operator-pre-install
   namespace: {{ .Release.Namespace }}
   labels:
-  {{- if .Values.globalLabels }}
-{{ toYaml .Values.globalLabels | indent 4}}
+  {{- if $jobLabels }}
+{{ toYaml $jobLabels | indent 4}}
     {{- end }}
 spec:
-  backoffLimit: 0
-  ttlSecondsAfterFinished: 30
+  backoffLimit: {{ .Values.preInstallJob.backoffLimit }}
+  ttlSecondsAfterFinished: {{ .Values.preInstallJob.ttlSecondsAfterFinished }}
   template:
     metadata:
       annotations:
-        {{- if .Values.globalAnnotations }}
-{{ toYaml .Values.globalAnnotations | indent 8}}
+        {{- if $podAnnotations }}
+{{ toYaml $podAnnotations | indent 8}}
         {{- end }}
       creationTimestamp: null
       labels:
-        {{- if .Values.globalLabels }}
-{{ toYaml .Values.globalLabels | indent 8}}
+        {{- if $podLabels }}
+{{ toYaml $podLabels | indent 8}}
         {{- end }}
     spec:
+      {{- if .Values.preInstallJob.serviceAccountName }}
+      serviceAccountName: {{ .Values.preInstallJob.serviceAccountName }}
+      {{- end }}
       containers:
       - args:
         - |-
@@ -59,30 +86,27 @@ spec:
         - secretRef:
             name: '{{ ne .Values.apiKeySecret "" | ternary .Values.apiKeySecret "speedscale-apikey" }}'
             optional: false
-        image: '{{ .Values.image.registry }}/speedscale-cli:{{ .Values.image.tag }}'
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if .Values.preInstallJob.extraEnvFrom }}
+{{ toYaml .Values.preInstallJob.extraEnvFrom | nindent 8 }}
+        {{- end }}
+        image: '{{ $jobImageRegistry }}/speedscale-cli:{{ $jobImageTag }}'
+        imagePullPolicy: {{ $jobImagePullPolicy }}
         name: speedscale-cli
         volumeMounts:
         - mountPath: /tmp
           name: tmp
-        securityContext: {{ toYaml .Values.globalPodSecurityContext | nindent 10 }}
-        resources:
-          limits:
-            memory: "128M"
-            cpu: "1"
-          requests:
-            memory: "64M"
-            cpu: "100m"
+        securityContext: {{ toYaml $jobContainerSecurityContext | nindent 10 }}
+        resources: {{ toYaml .Values.preInstallJob.resources | nindent 10 }}
       restartPolicy: Never
-      securityContext: {{ toYaml .Values.globalSecurityContext | nindent 8 }}
-      {{- if .Values.affinity }}
-      affinity: {{ toYaml .Values.affinity | nindent 8 }}
+      securityContext: {{ toYaml $jobPodSecurityContext | nindent 8 }}
+      {{- if $jobAffinity }}
+      affinity: {{ toYaml $jobAffinity | nindent 8 }}
       {{- end }}
-      {{- if .Values.tolerations }}
-      tolerations: {{ toYaml .Values.tolerations | nindent 8 }}
+      {{- if $jobTolerations }}
+      tolerations: {{ toYaml $jobTolerations | nindent 8 }}
       {{- end }}
-      {{- if .Values.nodeSelector }}
-      nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
+      {{- if $jobNodeSelector }}
+      nodeSelector: {{ toYaml $jobNodeSelector | nindent 8 }}
       {{- end }}
       volumes:
       - name: tmp
