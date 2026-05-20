@@ -133,6 +133,35 @@ privilegedSidecars: false
 # This job requires a root container user, disable if not needed or security policies forbid `runAsNonRoot: true`
 createJKS: true
 
+# Overrides for the speedscale-operator-pre-install hook job.
+# Job and pod annotations/labels are merged with the global values above.
+# Security context and placement settings fall back to the global values when left unset.
+preInstallJob:
+  annotations: {}
+  labels: {}
+  podAnnotations: {}
+  podLabels: {}
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 30
+  resources:
+    limits:
+      memory: "128M"
+      cpu: "1"
+    requests:
+      memory: "64M"
+      cpu: "100m"
+  image:
+    registry: ""
+    tag: ""
+    pullPolicy: ""
+  containerSecurityContext: null
+  podSecurityContext: null
+  affinity: null
+  tolerations: null
+  nodeSelector: null
+  serviceAccountName: ""
+  extraEnvFrom: []
+
 # control if the sidecar should enable/disable use of the smart dns lookup feature (requires NET_ADMIN)
 disableSidecarSmartReverseDNS: false
 

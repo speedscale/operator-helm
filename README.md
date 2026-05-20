@@ -62,6 +62,22 @@ helm -n speedscale uninstall speedscale-operator
 kubectl -n speedscale delete job speedscale-operator-pre-install
 ```
 
+If your cluster needs different settings for that hook job than the rest of the chart,
+you can override them with `preInstallJob` values. For example:
+
+```yaml
+preInstallJob:
+  podSecurityContext:
+    runAsNonRoot: false
+    fsGroup: 0
+  containerSecurityContext:
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0
+  nodeSelector:
+    kubernetes.io/os: linux
+```
+
 ## Uninstall Chart
 
 ```bash
