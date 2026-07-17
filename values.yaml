@@ -41,7 +41,7 @@ image:
 # Individual tags to be used by specific components. If specified here, the operator will use the given tag
 # when creating resources with that component. If not specified, the above default is used.
 imageTags:
-  nettap: v0.1.43
+  nettap: v0.1.47
 
 # Log level for Speedscale components.
 logLevel: "info"
