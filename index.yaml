@@ -10,7 +10,7 @@ entries:
     created: "2026-08-20T19:31:58.517399574Z"
     description: Stress test your APIs with real world scenarios.  Collect and replay
       traffic without scripting.
-    digest: 6a693a8476594cbc0afafe9b6879302cebb2c09f0da37183c5584c31ba436c61
+    digest: 9c249f7e506f69d14cfb1fce66bbed843617f31c825d1d252fa6a455d5edcb01
     home: https://speedscale.com
     icon: https://raw.githubusercontent.com/speedscale/assets/main/logo/gold_logo_only.png
     keywords:

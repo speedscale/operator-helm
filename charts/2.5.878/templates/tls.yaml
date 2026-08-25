@@ -105,6 +105,7 @@ spec:
       {{- end }}
 {{- end }}
 ---
+{{- if .Values.createJKS }}
 apiVersion: v1
 automountServiceAccountToken: true
 kind: ServiceAccount
@@ -124,7 +125,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
+kind: Role
 metadata:
   annotations:
     helm.sh/hook: pre-install
@@ -132,6 +133,7 @@ metadata:
     helm.sh/hook-weight: "2"
   creationTimestamp: null
   name: speedscale-operator-provisioning
+  namespace: {{ .Release.Namespace }}
 rules:
 - apiGroups:
   - ""
@@ -139,30 +141,17 @@ rules:
   - secrets
   verbs:
   - create
-  - delete
-  - deletecollection
-  - get
-  - list
-  - patch
-  - update
-  - watch
 - apiGroups:
-  - admissionregistration.k8s.io
+  - ""
+  resourceNames:
+  - speedscale-jks
   resources:
-  - mutatingwebhookconfigurations
-  - validatingwebhookconfigurations
+  - secrets
   verbs:
-  - create
   - delete
-  - deletecollection
-  - get
-  - list
-  - patch
-  - update
-  - watch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
+kind: RoleBinding
 metadata:
   annotations:
     helm.sh/hook: pre-install
@@ -173,14 +162,16 @@ metadata:
     {{- end }}
   creationTimestamp: null
   name: speedscale-operator-provisioning
+  namespace: {{ .Release.Namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
+  kind: Role
   name: speedscale-operator-provisioning
 subjects:
 - kind: ServiceAccount
   name: speedscale-operator-provisioning
   namespace: {{ .Release.Namespace }}
+{{- end }}
 ---
 {{- if .Values.createTLSCerts }}
 apiVersion: v1
