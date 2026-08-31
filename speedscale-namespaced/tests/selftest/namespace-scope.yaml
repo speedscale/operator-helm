@@ -1,0 +1,10 @@
+# Trips: namespace-scope. A template that hard-codes a namespace, or that reads
+# a value instead of .Release.Namespace, writes into somebody else's namespace.
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: speedscale-forwarder
+  namespace: kube-system
+data:
+  LOG_LEVEL: info

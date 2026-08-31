@@ -1,0 +1,277 @@
+{{- if .Values.tls.create }}
+{{- /*
+  Certificate material is generated once and then reused. `lookup` returns the
+  live Secret on an upgrade, so re-running `helm upgrade` does NOT rotate the CA
+  out from under every workload already trusting it. Under `helm template`
+  lookup is empty and a fresh throwaway pair is generated, which is why the
+  evidence pack's rendered output shows different bytes on every regeneration.
+*/ -}}
+{{- $existing := lookup "v1" "Secret" .Release.Namespace "speedscale-certs" -}}
+{{- $crt := "" -}}
+{{- $key := "" -}}
+{{- $cabundle := "" -}}
+{{- if and $existing $existing.data (index (default dict $existing.data) "tls.crt") -}}
+{{- $crt = index $existing.data "tls.crt" | b64dec -}}
+{{- $key = index $existing.data "tls.key" | b64dec -}}
+{{- $cabundle = (index (default dict $existing.data) "ca.crt" | default (index $existing.data "tls.crt")) | b64dec -}}
+{{- else -}}
+{{- $ns := .Release.Namespace -}}
+{{- $dns := list
+      "speedscale-forwarder"
+      (printf "speedscale-forwarder.%s" $ns)
+      (printf "speedscale-forwarder.%s.svc" $ns)
+      (printf "speedscale-forwarder.%s.svc.cluster.local" $ns)
+      "speedscale-inspector"
+      (printf "speedscale-inspector.%s" $ns)
+      (printf "speedscale-inspector.%s.svc" $ns)
+      (printf "speedscale-inspector.%s.svc.cluster.local" $ns)
+      (printf "*.%s.svc" $ns)
+      (printf "*.%s.svc.cluster.local" $ns) -}}
+{{- $dns = concat $dns (default (list) .Values.tls.extraDNSNames) -}}
+{{- $ca := genCA .Values.tls.caCommonName (int .Values.tls.validityDays) -}}
+{{- $leaf := genSignedCert .Values.tls.caCommonName (list) $dns (int .Values.tls.validityDays) $ca -}}
+{{- $crt = $leaf.Cert -}}
+{{- $key = $leaf.Key -}}
+{{- $cabundle = $ca.Cert -}}
+{{- end }}
+apiVersion: v1
+kind: Secret
+type: kubernetes.io/tls
+metadata:
+  name: speedscale-certs
+  namespace: '{{ .Release.Namespace }}'
+  labels:
+    {{- with .Values.globalLabels }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    app: speedscale
+    controlplane.speedscale.com/component: tls
+  {{- with .Values.globalAnnotations }}
+  annotations: {{ toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  tls.crt: {{ $crt | b64enc }}
+  tls.key: {{ $key | b64enc }}
+  # The CA bundle instrumented workloads trust so the sidecar can terminate TLS.
+  ca.crt: {{ $cabundle | b64enc }}
+{{- end }}
+
+{{- if .Values.tls.createJKS }}
+{{- $jksName := .Values.tls.jksSecret | default "speedscale-jks" -}}
+{{- $jksExisting := lookup "v1" "Secret" .Release.Namespace $jksName -}}
+{{- /*
+  The keystore Secret is part of the release so the Job that fills it needs only
+  update/patch -- never create, never delete. Existing content is carried
+  forward on upgrade so Helm's apply does not blank out what the Job wrote.
+*/}}
+---
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: '{{ $jksName }}'
+  namespace: '{{ .Release.Namespace }}'
+  labels:
+    {{- with .Values.globalLabels }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    app: speedscale
+    controlplane.speedscale.com/component: tls
+  annotations:
+    {{- with .Values.globalAnnotations }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    helm.sh/resource-policy: keep
+{{- if and $jksExisting $jksExisting.data }}
+data: {{ toYaml $jksExisting.data | nindent 2 }}
+{{- else }}
+data: {}
+{{- end }}
+---
+apiVersion: v1
+kind: ServiceAccount
+automountServiceAccountToken: true
+{{- with .Values.image.pullSecrets }}
+imagePullSecrets: {{ toYaml . | nindent 2 }}
+{{- end }}
+metadata:
+  name: speedscale-jks
+  namespace: '{{ .Release.Namespace }}'
+  labels:
+    {{- with .Values.globalLabels }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    app: speedscale
+    controlplane.speedscale.com/component: tls
+  annotations:
+    {{- with .Values.globalAnnotations }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: "1"
+    helm.sh/hook-delete-policy: before-hook-creation
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: speedscale-jks
+  namespace: '{{ .Release.Namespace }}'
+  labels:
+    {{- with .Values.globalLabels }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    app: speedscale
+    controlplane.speedscale.com/component: tls
+  annotations:
+    {{- with .Values.globalAnnotations }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: "2"
+    helm.sh/hook-delete-policy: before-hook-creation
+# Exactly one Secret, by name, and no create or delete. The keystore Secret is
+# rendered by the chart, so this identity only ever fills one in place -- it
+# cannot mint new Secrets and it cannot destroy the API key or the certs.
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - '{{ $jksName }}'
+  resources:
+  - secrets
+  verbs:
+  - get
+  - update
+  - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: speedscale-jks
+  namespace: '{{ .Release.Namespace }}'
+  labels:
+    {{- with .Values.globalLabels }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    app: speedscale
+    controlplane.speedscale.com/component: tls
+  annotations:
+    {{- with .Values.globalAnnotations }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: "3"
+    helm.sh/hook-delete-policy: before-hook-creation
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: speedscale-jks
+subjects:
+- kind: ServiceAccount
+  name: speedscale-jks
+  namespace: '{{ .Release.Namespace }}'
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: speedscale-create-jks
+  namespace: '{{ .Release.Namespace }}'
+  labels:
+    {{- with .Values.globalLabels }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    app: speedscale
+    controlplane.speedscale.com/component: tls
+  annotations:
+    {{- with .Values.globalAnnotations }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    # post-install/post-upgrade, not pre-install: the keystore Secret it fills
+    # is a release resource, so it has to exist first.
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: "10"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 60
+  template:
+    metadata:
+      annotations:
+        {{- with .Values.globalAnnotations }}
+{{ toYaml . | indent 8 }}
+        {{- end }}
+        # A mesh sidecar would keep this pod Running forever after the job
+        # container exits, and the hook would never complete.
+        sidecar.istio.io/inject: "false"
+      labels:
+        {{- with .Values.globalLabels }}
+{{ toYaml . | indent 8 }}
+        {{- end }}
+        app: speedscale
+        controlplane.speedscale.com/component: tls
+    spec:
+      restartPolicy: Never
+      serviceAccountName: speedscale-jks
+      securityContext:
+        # keytool writes into the JVM's own trust store, which is root-owned in
+        # the image. This is the ONLY pod in the chart that is not runAsNonRoot,
+        # and it is opt-in (tls.createJKS, default false).
+        runAsNonRoot: false
+        fsGroup: 0
+      containers:
+      - name: create-jks
+        image: '{{ .Values.image.registry }}/{{ .Values.tls.jks.image }}'
+        imagePullPolicy: '{{ .Values.image.pullPolicy }}'
+        command:
+        - sh
+        - -c
+        args:
+        - |-
+          set -eu
+          trap 'curl -s -X POST http://127.0.0.1:15000/quitquitquit >/dev/null 2>&1 || true' EXIT
+          keytool -keystore /usr/lib/jvm/jre/lib/security/cacerts \
+            -importcert -noprompt -trustcacerts -storepass changeit \
+            -alias speedscale -file /etc/ssl/speedscale/ca.crt
+          # update/patch only. The Secret is a release resource; this identity
+          # has no create and no delete verb, by design.
+          kubectl -n "${POD_NAMESPACE}" patch secret "${JKS_SECRET_NAME}" \
+            --type=merge \
+            -p "{\"data\":{\"cacerts.jks\":\"$(base64 < /usr/lib/jvm/jre/lib/security/cacerts | tr -d '\n')\"}}"
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: JKS_SECRET_NAME
+          value: '{{ $jksName }}'
+        resources: {{- toYaml .Values.tls.jks.resources | nindent 10 }}
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+          runAsGroup: 0
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: false
+          seccompProfile:
+            type: RuntimeDefault
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - mountPath: /etc/ssl/speedscale
+          name: speedscale-tls
+          readOnly: true
+      volumes:
+      - name: speedscale-tls
+        secret:
+          secretName: '{{ include "speedscale.certsSecretName" . }}'
+      {{- with .Values.affinity }}
+      affinity: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations: {{ toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

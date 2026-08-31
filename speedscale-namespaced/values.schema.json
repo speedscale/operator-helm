@@ -1,0 +1,249 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "speedscale-namespaced values",
+  "description": "Values for the namespaced Speedscale chart. Every knob here affects only .Release.Namespace; there is deliberately no value that widens the install's scope.",
+  "type": "object",
+  "required": [
+    "clusterName",
+    "apiKeySecret",
+    "image",
+    "forwarder",
+    "inspector",
+    "replayCoordinator",
+    "replayRuntime",
+    "capture",
+    "tls",
+    "uninstall",
+    "networkPolicy",
+    "pdb"
+  ],
+  "properties": {
+    "clusterName": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Cluster name as it appears in the Speedscale dashboard."
+    },
+    "appUrl": {
+      "type": "string",
+      "minLength": 1
+    },
+    "apiKeySecret": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Name of a pre-existing Secret. The chart never creates it."
+    },
+    "instanceID": {
+      "type": "string",
+      "description": "Shared PROCESS_ID for the forwarder and inspector. Empty derives one."
+    },
+    "logLevel": {
+      "type": "string",
+      "enum": ["debug", "info", "warn", "error"]
+    },
+    "filterRule": {
+      "type": "string"
+    },
+    "deployDemo": {
+      "type": "string"
+    },
+    "image": {
+      "type": "object",
+      "required": ["registry", "tag", "pullPolicy"],
+      "properties": {
+        "registry": { "type": "string", "minLength": 1 },
+        "tag": { "type": "string", "minLength": 1 },
+        "pullPolicy": {
+          "type": "string",
+          "enum": ["Always", "IfNotPresent", "Never"]
+        },
+        "pullSecrets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "properties": { "name": { "type": "string", "minLength": 1 } }
+          }
+        }
+      }
+    },
+    "dlp": {
+      "type": "object",
+      "required": ["enabled", "config"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "config": { "type": "string" }
+      }
+    },
+    "globalAnnotations": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "globalLabels": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "globalPodSecurityContext": { "type": "object" },
+    "globalSecurityContext": { "type": "object" },
+    "affinity": { "type": "object" },
+    "tolerations": { "type": "array", "items": { "type": "object" } },
+    "nodeSelector": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "namespaceSelector": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "secretAccessList": {
+      "type": "array",
+      "description": "Secrets granted individually, by resourceName. Empty means no Secret access at all.",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "forwarder": {
+      "type": "object",
+      "required": ["enabled", "replicas", "telemetryInterval", "resources"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "replicas": { "type": "integer", "minimum": 0 },
+        "telemetryInterval": {
+          "type": "string",
+          "pattern": "^([0-9]+(\\.[0-9]+)?(ns|us|ms|s|m|h))+$",
+          "description": "Go time.Duration String() form, e.g. 1m0s. Copied verbatim into TELEMETRY_INTERVAL."
+        },
+        "exporters": { "type": "object" },
+        "resources": { "type": "object" }
+      }
+    },
+    "inspector": {
+      "type": "object",
+      "required": ["enabled", "replicas", "resources"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "replicas": { "type": "integer", "minimum": 0 },
+        "accessLabels": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "serviceAccountName": { "type": "string" },
+        "metricsEnabled": { "type": "boolean" },
+        "jobsEnabled": { "type": "boolean" },
+        "resources": { "type": "object" }
+      }
+    },
+    "replayCoordinator": {
+      "type": "object",
+      "required": ["enabled", "replicas", "resources"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "replicas": { "type": "integer", "minimum": 0, "maximum": 1 },
+        "resyncInterval": {
+          "type": "string",
+          "pattern": "^([0-9]+(\\.[0-9]+)?(ns|us|ms|s|m|h))+$"
+        },
+        "provisioningTimeout": {
+          "type": "string",
+          "pattern": "^([0-9]+(\\.[0-9]+)?(ns|us|ms|s|m|h))+$"
+        },
+        "leaseEnabled": { "type": "boolean" },
+        "resources": { "type": "object" }
+      }
+    },
+    "replayRuntime": {
+      "type": "object",
+      "required": ["enabled", "serviceAccountName"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "serviceAccountName": { "type": "string", "minLength": 1 }
+      }
+    },
+    "capture": {
+      "type": "object",
+      "required": ["forwarderServiceName"],
+      "properties": {
+        "forwarderServiceName": { "type": "string", "minLength": 1 },
+        "enableDiagnostics": { "type": "boolean" },
+        "reinitializeIptables": { "type": "boolean" }
+      }
+    },
+    "tls": {
+      "type": "object",
+      "required": ["create", "createJKS"],
+      "properties": {
+        "create": { "type": "boolean" },
+        "certsSecret": {
+          "type": "string",
+          "description": "Required when create is false."
+        },
+        "caCommonName": { "type": "string", "minLength": 1 },
+        "extraDNSNames": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "validityDays": { "type": "integer", "minimum": 1 },
+        "createJKS": { "type": "boolean" },
+        "jksSecret": { "type": "string", "minLength": 1 },
+        "jks": {
+          "type": "object",
+          "properties": {
+            "image": { "type": "string", "minLength": 1 },
+            "resources": { "type": "object" }
+          }
+        }
+      }
+    },
+    "uninstall": {
+      "type": "object",
+      "required": ["enabled", "cleanupTimeout", "forceCleanupOnUninstall"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "cleanupTimeout": {
+          "type": "string",
+          "pattern": "^[0-9]+[hms]$",
+          "description": "Whole number of h, m or s. Also becomes the Job's activeDeadlineSeconds."
+        },
+        "forceCleanupOnUninstall": { "type": "boolean" },
+        "resources": { "type": "object" }
+      }
+    },
+    "networkPolicy": {
+      "type": "object",
+      "required": ["enabled"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "cloudEgressCIDRs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "cloudEgressExceptCIDRs": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "extraForwarderIngressFrom": {
+          "type": "array",
+          "items": { "type": "object" }
+        }
+      }
+    },
+    "pdb": {
+      "type": "object",
+      "required": ["enabled"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "minAvailable": { "type": ["integer", "string"] }
+      }
+    },
+    "tenant": {
+      "type": "object",
+      "description": "Cloud-issued identity, not configuration. See S-12914.",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "bucket": { "type": "string" },
+        "region": { "type": "string" },
+        "stream": { "type": "string" },
+        "subTenantName": { "type": "string" }
+      }
+    }
+  }
+}

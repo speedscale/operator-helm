@@ -1,0 +1,34 @@
+{{- if .Values.inspector.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: speedscale-inspector
+  namespace: '{{ .Release.Namespace }}'
+  labels:
+    {{- with .Values.globalLabels }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    app: speedscale-inspector
+    controlplane.speedscale.com/component: inspector
+  {{- with .Values.globalAnnotations }}
+  annotations: {{ toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  ACCESS_LABELS: {{ .Values.inspector.accessLabels | default dict | toJson | quote }}
+  APP_POD_NAMESPACE: '{{ .Release.Namespace }}'
+  CLUSTER_NAME: '{{ .Values.clusterName }}'
+  DEPLOY_DEMO: '{{ .Values.deployDemo }}'
+  HTTP_ENABLED: "true"
+  LOG_LEVEL: '{{ .Values.logLevel }}'
+  PROCESS_ID: '{{ include "speedscale.instanceID" . }}'
+  # The release namespace is always appended: a namespaced install must be able
+  # to see its own namespace without the user restating it. The runtime path
+  # takes the list verbatim from cluster-scoped settings instead, which is a
+  # reviewed parity exemption (S-12915).
+  NAMESPACE_SELECTOR: {{ (uniq (append (default (list) .Values.namespaceSelector) .Release.Namespace)) | join "," | quote }}
+  {{- if .Values.secretAccessList }}
+  # Only listed when the operator opted in. An empty secretAccessList leaves
+  # this key unset AND grants no Secret rule at all -- see inspector-rbac.yaml.
+  SECRET_ACCESS_LIST: {{ (uniq .Values.secretAccessList) | join "," | quote }}
+  {{- end }}
+{{- end }}

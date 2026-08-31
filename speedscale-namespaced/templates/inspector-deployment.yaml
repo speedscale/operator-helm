@@ -1,0 +1,96 @@
+{{- if .Values.inspector.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: speedscale-inspector
+  namespace: '{{ .Release.Namespace }}'
+  labels:
+    {{- with .Values.globalLabels }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    app: speedscale-inspector
+    controlplane.speedscale.com/component: inspector
+  annotations:
+    {{- with .Values.globalAnnotations }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    operator.speedscale.com/ignore: "true"
+spec:
+  replicas: {{ .Values.inspector.replicas | default 1 }}
+  selector:
+    matchLabels:
+      app: speedscale-inspector
+      controlplane.speedscale.com/component: inspector
+  template:
+    metadata:
+      annotations:
+        {{- with .Values.globalAnnotations }}
+{{ toYaml . | indent 8 }}
+        {{- end }}
+        checksum/config: '{{ include (print $.Template.BasePath "/inspector-configmap.yaml") . | sha256sum }}'
+      labels:
+        {{- with .Values.globalLabels }}
+{{ toYaml . | indent 8 }}
+        {{- end }}
+        app: speedscale-inspector
+        controlplane.speedscale.com/component: inspector
+    spec:
+      serviceAccountName: '{{ include "speedscale.inspectorServiceAccountName" . }}'
+      securityContext: {{- toYaml .Values.globalSecurityContext | nindent 8 }}
+      containers:
+      - name: speedscale-inspector
+        image: '{{ .Values.image.registry }}/inspector:{{ .Values.image.tag }}'
+        imagePullPolicy: '{{ .Values.image.pullPolicy }}'
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        envFrom:
+        - configMapRef:
+            name: speedscale-inspector
+        - secretRef:
+            name: '{{ include "speedscale.apiKeySecretName" . }}'
+            optional: false
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        livenessProbe:
+          failureThreshold: 30
+          grpc:
+            port: 6666
+          initialDelaySeconds: 1
+          periodSeconds: 2
+          successThreshold: 1
+          timeoutSeconds: 3
+        readinessProbe:
+          failureThreshold: 30
+          grpc:
+            port: 6666
+          initialDelaySeconds: 1
+          periodSeconds: 2
+          successThreshold: 1
+          timeoutSeconds: 3
+        resources: {{- toYaml .Values.inspector.resources | nindent 10 }}
+        securityContext: {{- toYaml .Values.globalPodSecurityContext | nindent 10 }}
+        volumeMounts:
+        - mountPath: /tmp
+          name: speedscale-diagnostics
+      volumes:
+      - emptyDir: {}
+        name: speedscale-diagnostics
+      {{- with .Values.affinity }}
+      affinity: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations: {{ toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

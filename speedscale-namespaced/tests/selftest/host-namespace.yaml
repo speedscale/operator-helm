@@ -1,0 +1,16 @@
+# Trips: host-namespace. hostNetwork puts the pod on the node's network stack,
+# which is a node-level escape from a namespaced install.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: speedscale-forwarder
+  namespace: speedscale
+spec:
+  template:
+    spec:
+      hostNetwork: true
+      hostPID: true
+      containers:
+      - name: forwarder
+        image: gcr.io/speedscale/forwarder:v1

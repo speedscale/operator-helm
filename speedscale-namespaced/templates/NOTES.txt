@@ -1,0 +1,53 @@
+speedscale-namespaced {{ .Chart.Version }} installed into namespace {{ .Release.Namespace }}.
+
+Everything this release created is namespace-scoped. Nothing outside
+{{ .Release.Namespace }} was read, written or granted.
+
+{{- if not .Values.tenant.id }}
+
+WARNING: tenant.id is empty.
+
+  Tenant identity (id / name / bucket / region / stream) is issued by the
+  Speedscale cloud in exchange for the API key, so a chart cannot compute it.
+  The forwarder will not become ready until it is supplied. S-12914 owns how a
+  namespaced install resolves this; until then, set it explicitly:
+
+    helm upgrade {{ .Release.Name }} -n {{ .Release.Namespace }} \
+      --set tenant.id=... --set tenant.name=... --set tenant.bucket=... \
+      --set tenant.region=... --set tenant.stream=...
+{{- end }}
+
+API key:
+  This chart does NOT create the API key Secret. It expects
+  {{ include "speedscale.apiKeySecretName" . }} to already exist in
+  {{ .Release.Namespace }} with keys SPEEDSCALE_API_KEY and SPEEDSCALE_APP_URL.
+
+  kubectl -n {{ .Release.Namespace }} create secret generic {{ include "speedscale.apiKeySecretName" . }} \
+    --from-literal=SPEEDSCALE_API_KEY=<your-key> \
+    --from-literal=SPEEDSCALE_APP_URL={{ .Values.appUrl }}
+
+Installed components:
+{{- if .Values.forwarder.enabled }}
+  - forwarder            svc/speedscale-forwarder:80 (grpc), :4317 (otlp)
+{{- end }}
+{{- if .Values.inspector.enabled }}
+  - inspector            svc/speedscale-inspector:80 (http)
+{{- end }}
+{{- if .Values.replayCoordinator.enabled }}
+  - replay coordinator   ConfigMap-driven, no CRD
+{{- end }}
+{{- if .Values.replayRuntime.enabled }}
+  - replay runtime RBAC  sa/{{ include "speedscale.replayRuntimeName" . }}
+{{- end }}
+
+{{- if .Values.uninstall.enabled }}
+
+Uninstall runs a pre-delete Job with a {{ .Values.uninstall.cleanupTimeout }} budget.
+{{- if not .Values.uninstall.forceCleanupOnUninstall }}
+If that Job fails, `helm uninstall` fails and the release stays put. Set
+uninstall.forceCleanupOnUninstall=true to uninstall anyway, at the cost of
+leaving instrumented workloads carrying Speedscale sidecars.
+{{- end }}
+{{- end }}
+
+Security review pack: speedscale-namespaced/evidence/ in the chart repository.

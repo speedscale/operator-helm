@@ -1,0 +1,229 @@
+{{- if .Values.uninstall.enabled }}
+{{- $deadline := include "speedscale.durationSeconds" .Values.uninstall.cleanupTimeout -}}
+apiVersion: v1
+kind: ServiceAccount
+automountServiceAccountToken: true
+{{- with .Values.image.pullSecrets }}
+imagePullSecrets: {{ toYaml . | nindent 2 }}
+{{- end }}
+metadata:
+  name: speedscale-uninstall
+  namespace: '{{ .Release.Namespace }}'
+  labels:
+    {{- with .Values.globalLabels }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    app: speedscale
+    controlplane.speedscale.com/component: uninstall
+  annotations:
+    {{- with .Values.globalAnnotations }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    helm.sh/hook: pre-delete
+    helm.sh/hook-weight: "1"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: speedscale-uninstall
+  namespace: '{{ .Release.Namespace }}'
+  labels:
+    {{- with .Values.globalLabels }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    app: speedscale
+    controlplane.speedscale.com/component: uninstall
+  annotations:
+    {{- with .Values.globalAnnotations }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    helm.sh/hook: pre-delete
+    helm.sh/hook-weight: "2"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+# Deliberately NARROWER than the coordinator's Role, because an uninstall runs
+# unattended at the least convenient moment:
+#   * NO workload patch. It cannot touch a Deployment or StatefulSet spec. A
+#     half-finished uninstall must not be able to leave a customer workload
+#     mid-mutation.
+#   * NO deletion of anything. Helm removes the release's own objects; this
+#     hook's job is to signal in-flight replays to wind down and to record what
+#     was left behind, not to garbage-collect.
+rules:
+# Signal in-flight replays through the same labeled ConfigMaps the replay API
+# uses, and leave a record of anything that could not be wound down.
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+# Read-only visibility to decide whether cleanup finished.
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  - statefulsets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: speedscale-uninstall
+  namespace: '{{ .Release.Namespace }}'
+  labels:
+    {{- with .Values.globalLabels }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    app: speedscale
+    controlplane.speedscale.com/component: uninstall
+  annotations:
+    {{- with .Values.globalAnnotations }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    helm.sh/hook: pre-delete
+    helm.sh/hook-weight: "3"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: speedscale-uninstall
+subjects:
+- kind: ServiceAccount
+  name: speedscale-uninstall
+  namespace: '{{ .Release.Namespace }}'
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: speedscale-uninstall
+  namespace: '{{ .Release.Namespace }}'
+  labels:
+    {{- with .Values.globalLabels }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    app: speedscale
+    controlplane.speedscale.com/component: uninstall
+  annotations:
+    {{- with .Values.globalAnnotations }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    helm.sh/hook: pre-delete
+    helm.sh/hook-weight: "10"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  # One shot. A retried cleanup that keeps failing just stretches the uninstall
+  # out to the deadline; forceCleanupOnUninstall is the supported escape hatch.
+  backoffLimit: 0
+  activeDeadlineSeconds: {{ $deadline }}
+  ttlSecondsAfterFinished: 60
+  template:
+    metadata:
+      annotations:
+        {{- with .Values.globalAnnotations }}
+{{ toYaml . | indent 8 }}
+        {{- end }}
+        sidecar.istio.io/inject: "false"
+      labels:
+        {{- with .Values.globalLabels }}
+{{ toYaml . | indent 8 }}
+        {{- end }}
+        app: speedscale
+        controlplane.speedscale.com/component: uninstall
+    spec:
+      restartPolicy: Never
+      serviceAccountName: speedscale-uninstall
+      securityContext: {{- toYaml .Values.globalSecurityContext | nindent 8 }}
+      containers:
+      # ###################################################################
+      # PLACEHOLDER ENTRYPOINT -- OWNED BY S-12933.
+      #
+      # The cleanup logic itself does not exist yet. This chart renders the Job
+      # that will invoke it, with the arguments settled, so the hook wiring,
+      # the RBAC and the timeout are reviewable now and S-12933 only has to add
+      # the subcommand behind this path.
+      #
+      # Contract this Job assumes of `operator namespaced-cleanup`:
+      #   --namespace <ns>        the only namespace it may act on
+      #   --timeout <duration>    wall-clock budget; must exit before
+      #                           activeDeadlineSeconds kills the pod
+      #   --force                 exit 0 even when cleanup is incomplete
+      #   exit 0 -> uninstall proceeds; non-zero -> `helm uninstall` fails and
+      #   the release stays, unless --force was passed.
+      #
+      # Until S-12933 lands, an image without the subcommand exits non-zero,
+      # which BLOCKS `helm uninstall` unless uninstall.forceCleanupOnUninstall
+      # is set (default false) or uninstall.enabled is turned off.
+      # ###################################################################
+      - name: cleanup
+        image: '{{ .Values.image.registry }}/operator:{{ .Values.image.tag }}'
+        imagePullPolicy: '{{ .Values.image.pullPolicy }}'
+        command:
+        - /speedscale/operator
+        args:
+        - namespaced-cleanup
+        - --namespace
+        - '{{ .Release.Namespace }}'
+        - --timeout
+        - '{{ .Values.uninstall.cleanupTimeout }}'
+        {{- if .Values.uninstall.forceCleanupOnUninstall }}
+        - --force
+        {{- end }}
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: SPEEDSCALE_CLEANUP_TIMEOUT
+          value: '{{ .Values.uninstall.cleanupTimeout }}'
+        - name: SPEEDSCALE_FORCE_CLEANUP
+          value: {{ .Values.uninstall.forceCleanupOnUninstall | quote }}
+        envFrom:
+        - secretRef:
+            name: '{{ include "speedscale.apiKeySecretName" . }}'
+            # The API key Secret may already be gone when a namespace is being
+            # torn down wholesale. Cleanup is local work and does not need it.
+            optional: true
+        resources: {{- toYaml .Values.uninstall.resources | nindent 10 }}
+        securityContext: {{- toYaml .Values.globalPodSecurityContext | nindent 10 }}
+        volumeMounts:
+        - mountPath: /tmp
+          name: speedscale-diagnostics
+      volumes:
+      - emptyDir: {}
+        name: speedscale-diagnostics
+      {{- with .Values.affinity }}
+      affinity: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations: {{ toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

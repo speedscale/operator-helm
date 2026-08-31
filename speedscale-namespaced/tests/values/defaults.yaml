@@ -1,0 +1,6 @@
+# Matrix case: defaults.
+#
+# Deliberately empty. `helm template` with no -f still merges values.yaml, so
+# this case proves the shipped defaults render on their own -- an override here
+# would be testing the override instead.
+{}

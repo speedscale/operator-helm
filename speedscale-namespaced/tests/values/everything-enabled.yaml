@@ -1,0 +1,111 @@
+# Matrix case: every optional feature on at once.
+#
+# This is the widest surface the chart can render. If a forbidden kind, a
+# cluster-scoped reference or a stray namespace is ever going to appear, it
+# appears here.
+clusterName: everything-cluster
+instanceID: everything-instance-id
+
+image:
+  registry: gcr.io/speedscale
+  tag: v9.9.9
+  pullPolicy: IfNotPresent
+  pullSecrets:
+  - name: my-regcred
+
+logLevel: debug
+filterRule: standard
+deployDemo: java
+
+dlp:
+  enabled: true
+  config: strict
+
+globalAnnotations:
+  example.com/owner: platform-team
+globalLabels:
+  example.com/team: platform
+
+nodeSelector:
+  kubernetes.io/os: linux
+tolerations:
+- key: kubernetes.io/arch
+  operator: Equal
+  value: arm64
+  effect: NoSchedule
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/os
+          operator: In
+          values: [linux]
+
+namespaceSelector:
+- other-namespace
+secretAccessList:
+- app-db-credentials
+- app-oauth-credentials
+
+forwarder:
+  enabled: true
+  replicas: 2
+  telemetryInterval: 30s
+  exporters:
+    my-exporter:
+      otel_endpoint: http://otelcol.example.com:4317
+      filter_rule: standard
+
+inspector:
+  enabled: true
+  replicas: 2
+  accessLabels:
+    env: staging
+  metricsEnabled: true
+  jobsEnabled: true
+
+replayCoordinator:
+  enabled: true
+  leaseEnabled: true
+  resyncInterval: 5s
+  provisioningTimeout: 2m0s
+
+replayRuntime:
+  enabled: true
+
+capture:
+  forwarderServiceName: speedscale-forwarder
+  enableDiagnostics: true
+  reinitializeIptables: true
+
+tls:
+  create: true
+  createJKS: true
+  extraDNSNames:
+  - speedscale.example.internal
+  validityDays: 365
+
+uninstall:
+  enabled: true
+  cleanupTimeout: 10m
+  forceCleanupOnUninstall: true
+
+networkPolicy:
+  enabled: true
+  extraForwarderIngressFrom:
+  - namespaceSelector:
+      matchLabels:
+        kubernetes.io/metadata.name: my-app
+
+pdb:
+  enabled: true
+  minAvailable: 1
+
+tenant:
+  id: everything-tenant
+  name: everything
+  bucket: everything-bucket
+  region: us-east-1
+  stream: everything-stream
+  subTenantName: default

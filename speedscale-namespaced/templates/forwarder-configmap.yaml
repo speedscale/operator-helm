@@ -1,0 +1,41 @@
+{{- if .Values.forwarder.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: speedscale-forwarder
+  namespace: '{{ .Release.Namespace }}'
+  labels:
+    {{- with .Values.globalLabels }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    app: speedscale-forwarder
+    controlplane.speedscale.com/component: forwarder
+  {{- with .Values.globalAnnotations }}
+  annotations: {{ toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  CLUSTER_NAME: '{{ .Values.clusterName }}'
+  CONTAINER_REGISTRY: '{{ .Values.image.registry }}'
+  CONTAINER_TYPE: '{{ .Values.image.tag }}'
+  EXPORTERS: {{ .Values.forwarder.exporters | default dict | toJson | quote }}
+  IMAGE_PULL_POLICY: '{{ .Values.image.pullPolicy }}'
+  LOG_LEVEL: '{{ .Values.logLevel }}'
+  PROCESS_ID: '{{ include "speedscale.instanceID" . }}'
+  SPEEDSCALE_DLP_CONFIG: '{{ .Values.dlp.config }}'
+  SPEEDSCALE_DLP_CONFIG_FILE: /etc/speedscale/dlp/dlp.json
+  SPEEDSCALE_FILTER_CONFIG_FILE: /etc/speedscale/filter/filter.json
+  SPEEDSCALE_FILTER_RULE: '{{ .Values.filterRule }}'
+  SPEEDSCALE_REDACT: {{ .Values.dlp.enabled | quote }}
+  TAP_ENABLED: "true"
+  TELEMETRY_INTERVAL: {{ .Values.forwarder.telemetryInterval | default "1m0s" | quote }}
+  # Cloud-issued tenant identity. The operator resolves these from the API key
+  # at startup; a chart cannot. They render empty until S-12914 settles how a
+  # namespaced install obtains them, and the forwarder will not become ready
+  # with an empty TENANT_ID.
+  TENANT_ID: '{{ .Values.tenant.id }}'
+  TENANT_NAME: '{{ .Values.tenant.name }}'
+  TENANT_BUCKET: '{{ .Values.tenant.bucket }}'
+  TENANT_REGION: '{{ .Values.tenant.region }}'
+  SUB_TENANT_NAME: '{{ .Values.tenant.subTenantName | default "default" }}'
+  SUB_TENANT_STREAM: '{{ .Values.tenant.stream }}'
+{{- end }}

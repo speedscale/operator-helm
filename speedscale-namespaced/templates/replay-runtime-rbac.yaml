@@ -1,0 +1,106 @@
+{{- if .Values.replayRuntime.enabled }}
+{{/*
+The identity the replay's own pods run as: generator, responder, collector.
+
+At runtime the operator provisions build.ReplayRole per ephemeral replay. The
+namespaced chart renders it ONCE per namespace instead, which is what removes
+the coordinator's need for any RBAC-management verb. The rules below are a
+transcription of build.StaticReplayRuntimeRules() (lib/kube/build/rbac.go);
+lib/kube/build/rbac_test.go pins those against ReplayRole's actual output so the
+two provisioning paths cannot drift.
+
+Names match build.StaticReplayRuntimeRoleName() / SvcAccountName("") so the
+replay components find the account they already look for.
+*/}}
+apiVersion: v1
+kind: ServiceAccount
+automountServiceAccountToken: true
+{{- with .Values.image.pullSecrets }}
+imagePullSecrets: {{ toYaml . | nindent 2 }}
+{{- end }}
+metadata:
+  name: '{{ include "speedscale.replayRuntimeName" . }}'
+  namespace: '{{ .Release.Namespace }}'
+  labels:
+    {{- with .Values.globalLabels }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    app: speedscale
+    controlplane.speedscale.com/component: replay-runtime
+  {{- with .Values.globalAnnotations }}
+  annotations: {{ toYaml . | nindent 4 }}
+  {{- end }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: speedscale
+  namespace: '{{ .Release.Namespace }}'
+  labels:
+    {{- with .Values.globalLabels }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    app: speedscale
+    controlplane.speedscale.com/component: replay-runtime
+  {{- with .Values.globalAnnotations }}
+  annotations: {{ toYaml . | nindent 4 }}
+  {{- end }}
+rules:
+# Optional in practice: a cluster with no metrics-server has no such API, and
+# the 403 must degrade report enrichment rather than fail the replay. That
+# fallback lives in the collector/report reader, not here.
+- apiGroups:
+  - metrics.k8s.io
+  resources:
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods/log
+  verbs:
+  - get
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: speedscale
+  namespace: '{{ .Release.Namespace }}'
+  labels:
+    {{- with .Values.globalLabels }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    app: speedscale
+    controlplane.speedscale.com/component: replay-runtime
+  {{- with .Values.globalAnnotations }}
+  annotations: {{ toYaml . | nindent 4 }}
+  {{- end }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: speedscale
+subjects:
+- kind: ServiceAccount
+  name: '{{ include "speedscale.replayRuntimeName" . }}'
+  namespace: '{{ .Release.Namespace }}'
+{{- end }}

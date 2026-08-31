@@ -1,0 +1,13 @@
+# Trips: apiversion-allowlist. A third-party custom resource is namespaced and
+# passes every other check, but it makes the chart depend on an operator the
+# customer may not have and cannot be reviewed as plain Kubernetes.
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: speedscale-forwarder
+  namespace: speedscale
+spec:
+  selector:
+    matchLabels:
+      app: speedscale-forwarder

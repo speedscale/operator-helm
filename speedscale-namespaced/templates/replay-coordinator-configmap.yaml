@@ -1,0 +1,47 @@
+{{- if .Values.replayCoordinator.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: speedscale-replay-coordinator
+  namespace: '{{ .Release.Namespace }}'
+  labels:
+    {{- with .Values.globalLabels }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+    app: speedscale-replay-coordinator
+    controlplane.speedscale.com/component: replay-coordinator
+  {{- with .Values.globalAnnotations }}
+  annotations: {{ toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  # NEEDS SYNC WITH S-12919. Every key below is a chart-side name for something
+  # operator/replaycoordinator.Config already models; the startup path that
+  # reads them is being written under S-12919. Renaming a key here without
+  # renaming it there produces a coordinator that starts with defaults and
+  # silently instruments the wrong Service.
+  CLUSTER_NAME: '{{ .Values.clusterName }}'
+  LOG_LEVEL: '{{ .Values.logLevel }}'
+  PROCESS_ID: '{{ include "speedscale.instanceID" . }}'
+  CONTAINER_REGISTRY: '{{ .Values.image.registry }}'
+  CONTAINER_TYPE: '{{ .Values.image.tag }}'
+  IMAGE_PULL_POLICY: '{{ .Values.image.pullPolicy }}'
+  # Names the installation provisioned. Config.Names exists precisely so a
+  # namespaced install pins nothing to a cluster-wide default.
+  API_KEY_SECRET_NAME: '{{ include "speedscale.apiKeySecretName" . }}'
+  SPEEDSCALE_TLS_SECRET_NAME: '{{ include "speedscale.certsSecretName" . }}'
+  {{- if .Values.tls.createJKS }}
+  SPEEDSCALE_JKS_SECRET_NAME: '{{ .Values.tls.jksSecret | default "speedscale-jks" }}'
+  {{- end }}
+  SPEEDSCALE_CONTROL_PLANE_NAMESPACE: '{{ .Release.Namespace }}'
+  # Capture wiring handed to instrumented workloads.
+  FORWARDER_SERVICE_NAME: '{{ .Values.capture.forwarderServiceName }}'
+  SIDECAR_ENABLE_DIAGNOSTICS: {{ .Values.capture.enableDiagnostics | quote }}
+  SIDECAR_REINITIALIZE_IPTABLES: {{ .Values.capture.reinitializeIptables | quote }}
+  # Loop timings (Go durations).
+  RESYNC_INTERVAL: {{ .Values.replayCoordinator.resyncInterval | default "10s" | quote }}
+  PROVISIONING_TIMEOUT: {{ .Values.replayCoordinator.provisioningTimeout | default "1m0s" | quote }}
+  # Cloud-issued tenant identity; same S-12914 hole as the forwarder's.
+  TENANT_ID: '{{ .Values.tenant.id }}'
+  TENANT_NAME: '{{ .Values.tenant.name }}'
+  SUB_TENANT_NAME: '{{ .Values.tenant.subTenantName | default "default" }}'
+{{- end }}

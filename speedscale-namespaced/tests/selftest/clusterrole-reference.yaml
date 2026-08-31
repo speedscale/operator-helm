@@ -1,0 +1,16 @@
+# Trips: clusterrole-reference. The RoleBinding itself is namespaced and looks
+# harmless; the roleRef is what quietly grants cluster-wide rights.
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: speedscale-inspector
+  namespace: speedscale
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: speedscale-inspector
+  namespace: speedscale

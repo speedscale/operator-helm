@@ -1,0 +1,24 @@
+apiVersion: v2
+name: speedscale-namespaced
+version: 0.1.0
+appVersion: "2.5.878"
+type: application
+description: Speedscale capture and replay confined to a single Kubernetes namespace - no cluster-scoped objects, no CRDs, no admission webhooks.
+home: https://speedscale.com
+icon: https://raw.githubusercontent.com/speedscale/assets/main/logo/gold_logo_only.png
+keywords:
+- speedscale
+- namespaced
+- test
+- testing
+- replay
+- traffic
+maintainers:
+- name: Speedscale Support
+  email: support@speedscale.com
+kubeVersion: ">= 1.21.0-0"
+annotations:
+  # Every object this chart renders is namespace-scoped and lands in
+  # .Release.Namespace. speedscale-namespaced/tests/denylist.sh enforces that
+  # in CI; see speedscale-namespaced/evidence/ for the security-review pack.
+  speedscale.com/scope: namespaced

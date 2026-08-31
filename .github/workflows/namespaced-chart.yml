@@ -1,0 +1,111 @@
+name: namespaced-chart
+
+# S-12917. Scoped to speedscale-namespaced/ on purpose: charts/ holds the
+# published classic charts, which are build artifacts of speedmgmt and are not
+# linted here.
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - 'speedscale-namespaced/**'
+      - '.github/workflows/namespaced-chart.yml'
+  pull_request:
+    paths:
+      - 'speedscale-namespaced/**'
+      - '.github/workflows/namespaced-chart.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CHART: speedscale-namespaced
+
+jobs:
+  lint:
+    name: helm lint + template matrix
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/setup-helm@v4
+        with:
+          version: v3.16.3
+
+      - name: helm lint (default values)
+        run: helm lint "$CHART"
+
+      # Lint each permutation too: values.schema.json only rejects a bad value
+      # when that value is actually supplied, so linting defaults alone proves
+      # nothing about the overrides customers will use.
+      - name: helm lint (values matrix)
+        run: |
+          set -euo pipefail
+          for vf in "$CHART"/tests/values/*.yaml; do
+            echo "--- helm lint --values $vf"
+            helm lint "$CHART" --values "$vf"
+          done
+
+      - name: helm template (values matrix x release namespaces)
+        run: |
+          set -euo pipefail
+          for vf in "$CHART"/tests/values/*.yaml; do
+            for ns in speedscale acme-payments; do
+              echo "--- helm template -n $ns --values $vf"
+              helm template ci "$CHART" --namespace "$ns" --values "$vf" > /dev/null
+            done
+          done
+
+  denylist:
+    name: static-render denylist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/setup-helm@v4
+        with:
+          version: v3.16.3
+
+      - name: Install yq
+        run: |
+          set -euo pipefail
+          if ! command -v yq >/dev/null 2>&1; then
+            sudo wget -qO /usr/local/bin/yq \
+              https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+            sudo chmod +x /usr/local/bin/yq
+          fi
+          yq --version
+
+      # Self-test FIRST. A denylist whose checks have quietly stopped firing
+      # passes everything, so proving the checks work has to gate the run that
+      # relies on them -- not follow it.
+      - name: Prove every check fires
+        env:
+          DENYLIST_SELFTEST: "1"
+        run: ./${{ env.CHART }}/tests/denylist.sh
+
+      - name: Denylist the real chart
+        run: ./${{ env.CHART }}/tests/denylist.sh
+
+  evidence:
+    name: evidence pack is current
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/setup-helm@v4
+        with:
+          version: v3.16.3
+
+      # The evidence pack is the customer-facing security deliverable (S-12907).
+      # If it can drift from the templates it describes, it is worse than
+      # nothing, so regenerate and fail on a diff.
+      - name: Regenerate and diff
+        run: |
+          set -euo pipefail
+          ./"$CHART"/evidence/generate.sh
+          if ! git diff --exit-code -- "$CHART"/evidence; then
+            echo
+            echo "The evidence pack is stale. Run ./$CHART/evidence/generate.sh and commit the result." >&2
+            exit 1
+          fi

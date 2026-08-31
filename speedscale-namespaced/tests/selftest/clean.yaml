@@ -1,0 +1,35 @@
+# Self-test control. Every check must pass this one, otherwise the denylist is
+# just failing everything and proving nothing.
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: speedscale-forwarder
+  namespace: speedscale
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: speedscale-forwarder
+  namespace: speedscale
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: speedscale-forwarder
+subjects:
+- kind: ServiceAccount
+  name: speedscale-forwarder
+  namespace: speedscale
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: speedscale-forwarder
+  namespace: speedscale
+spec:
+  template:
+    spec:
+      hostNetwork: false
+      containers:
+      - name: forwarder
+        image: gcr.io/speedscale/forwarder:v1

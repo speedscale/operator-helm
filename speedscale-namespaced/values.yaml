@@ -1,0 +1,254 @@
+# speedscale-namespaced default values.
+#
+# Everything this chart renders is namespace-scoped. There is no Namespace,
+# CustomResourceDefinition, webhook configuration, ClusterRole, cluster role
+# binding, DaemonSet, SecurityContextConstraints or PriorityClass anywhere in
+# the chart, and no template may add one -- tests/denylist.sh fails the build if
+# one appears.
+
+# The name of your cluster, as it appears in the Speedscale dashboard.
+clusterName: "my-cluster"
+
+# Speedscale domain the control plane talks to.
+appUrl: "app.speedscale.com"
+
+# Name of a PRE-EXISTING Secret holding the Speedscale API key. This chart NEVER
+# creates it: a namespaced install is expected to run in a namespace whose
+# credentials are managed outside the release (sealed secrets, external-secrets,
+# vault agent, or a plain `kubectl create secret`).
+#
+# The Secret must be of the form:
+#   type: Opaque
+#   data:
+#     SPEEDSCALE_API_KEY: <key>
+#     SPEEDSCALE_APP_URL: <appUrl>
+apiKeySecret: "speedscale-apikey"
+
+# Shared per-install instance id. It becomes PROCESS_ID in BOTH the forwarder
+# and inspector ConfigMaps, which the parity harness asserts must match
+# (operator/controlplane/parity/invariants.go). Leave empty and the chart falls
+# back to the existing forwarder ConfigMap's value, then to a generated id --
+# see templates/_helpers.tpl for why the fallback order matters.
+instanceID: ""
+
+# Log level for all Speedscale components.
+logLevel: "info"
+
+# Filter rule applied by the forwarder.
+filterRule: "standard"
+
+# Deploy a demo app at startup. Empty string deploys nothing.
+deployDemo: ""
+
+image:
+  registry: gcr.io/speedscale
+  tag: "v2.5.878"
+  pullPolicy: Always
+  # References to pre-existing image pull Secrets, e.g. [{name: my-regcred}].
+  pullSecrets: []
+
+# Data Loss Prevention settings.
+dlp:
+  enabled: false
+  config: "standard"
+
+# Applied to the ObjectMeta of every resource this chart renders, and to pod
+# templates. Never to a label selector.
+globalAnnotations: {}
+globalLabels: {}
+
+# Container-level security context for every Speedscale control-plane container.
+globalPodSecurityContext:
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  privileged: false
+  readOnlyRootFilesystem: true
+  runAsUser: 2100
+  runAsGroup: 2100
+  seccompProfile:
+    type: RuntimeDefault
+  capabilities:
+    drop:
+      - ALL
+
+# Pod-level security context for every Speedscale control-plane pod.
+globalSecurityContext:
+  runAsNonRoot: true
+  fsGroup: 2100
+  supplementalGroups: [2100]
+
+affinity: {}
+tolerations: []
+nodeSelector: {}
+
+# Extra namespaces the inspector reports on. The release namespace is always
+# appended by the chart, so an empty list still sees the install's own
+# namespace. NOTE: this chart grants no RBAC outside .Release.Namespace, so
+# naming another namespace here only has an effect if you separately grant the
+# inspector ServiceAccount access to it.
+namespaceSelector: []
+
+# Secrets the install may read for test variable substitution. Empty means the
+# inspector gets NO Secret read access at all (this chart never grants blanket
+# Secret access). Names listed here are granted individually, by resourceName.
+secretAccessList: []
+
+forwarder:
+  enabled: true
+  replicas: 1
+  # Go time.Duration form. "60s" and "1m0s" are the same duration but NOT the
+  # same string, and the value is copied verbatim into TELEMETRY_INTERVAL, so
+  # the parity harness only matches the .String() form.
+  telemetryInterval: "1m0s"
+  exporters: {}
+  resources:
+    limits:
+      cpu: "2"
+      memory: 512M
+    requests:
+      cpu: 300m
+      memory: 250M
+
+inspector:
+  enabled: true
+  replicas: 1
+  accessLabels: {}
+  # Override the inspector ServiceAccount name. Empty uses speedscale-inspector.
+  serviceAccountName: ""
+  # Grant the inspector read access to the namespaced metrics.k8s.io Pod metrics
+  # API. Off by default: clusters without metrics-server do not have the API,
+  # and the rule is only useful for report enrichment.
+  metricsEnabled: false
+  # Grant the inspector read access to batch Jobs in the release namespace.
+  jobsEnabled: true
+  resources:
+    limits:
+      cpu: 400m
+      memory: 500M
+    requests:
+      cpu: 200m
+      memory: 128M
+
+replayCoordinator:
+  enabled: true
+  # A single replica is assumed. The workload lease that keeps two replays from
+  # patching one workload at once lives in memory (operator/replaycoordinator),
+  # so a second replica would not see the first's leases.
+  replicas: 1
+  # How often a replay is reconsidered without an event.
+  resyncInterval: "10s"
+  # How long provisioning a replay's components may take.
+  provisioningTimeout: "1m0s"
+  # Grant the coordinator coordination.k8s.io Lease access. Off by default: the
+  # single-replica deployment does not need one. Turn it on only alongside a
+  # leader-elected coordinator.
+  leaseEnabled: false
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+# The generator / responder / collector pods a replay creates. The chart renders
+# their ServiceAccount and Role statically, once per namespace, in place of the
+# operator provisioning RBAC per replay.
+replayRuntime:
+  enabled: true
+  serviceAccountName: "speedscale"
+
+# Traffic capture (sidecar / init container) settings the coordinator hands to
+# workloads it instruments.
+capture:
+  # Service the injected sidecar ships captured traffic to. Must resolve from
+  # the instrumented workload's namespace.
+  forwarderServiceName: "speedscale-forwarder"
+  # Write sidecar diagnostics to the pod's ephemeral volume.
+  enableDiagnostics: false
+  # Re-apply the sidecar's iptables rules on restart. Needed where another
+  # component rewrites the pod's nat table after Speedscale's init container.
+  reinitializeIptables: false
+
+tls:
+  # Render the speedscale-certs Secret (tls.crt / tls.key / ca.crt). Set to
+  # false and supply certsSecret to bring your own PKI (cert-manager, vault).
+  create: true
+  # Name of a PRE-EXISTING TLS Secret to use when create is false. Ignored when
+  # create is true, where the chart always renders "speedscale-certs".
+  certsSecret: ""
+  caCommonName: "Speedscale"
+  # Subject Alternative Names added to the leaf certificate on top of the
+  # in-namespace Service DNS names the chart derives.
+  extraDNSNames: []
+  validityDays: 3650
+  # Render a Java keystore Secret plus the post-install/post-upgrade Job that
+  # fills it with the Speedscale CA. Needed only for JVM workloads that will
+  # not read the PEM bundle.
+  createJKS: false
+  jksSecret: "speedscale-jks"
+  jks:
+    # Image carrying keytool + kubectl. Pulled from .Values.image.registry.
+    image: "amazoncorretto:23"
+    resources:
+      limits:
+        cpu: "1"
+        memory: 256M
+      requests:
+        cpu: 100m
+        memory: 64M
+
+uninstall:
+  # Render the pre-delete Job that returns instrumented workloads to their
+  # original state before Helm removes the release.
+  enabled: true
+  # Go time.Duration handed to the cleanup entrypoint, and the source of the
+  # Job's activeDeadlineSeconds.
+  cleanupTimeout: "5m"
+  # Let `helm uninstall` proceed even if cleanup fails. Leaves instrumented
+  # workloads carrying Speedscale sidecars, so it is off by default.
+  forceCleanupOnUninstall: false
+  resources:
+    limits:
+      cpu: "1"
+      memory: 256M
+    requests:
+      cpu: 100m
+      memory: 64M
+
+# Optional namespaced NetworkPolicies. Off by default: a policy that is wrong
+# for your CNI silently breaks capture, and a namespace with no policies at all
+# is not made less safe by this chart declining to add one.
+networkPolicy:
+  enabled: false
+  # CIDRs the forwarder is allowed to reach for Speedscale cloud egress.
+  # 0.0.0.0/0 minus RFC1918 by default, so the policy does not become a
+  # cluster-internal wildcard.
+  cloudEgressCIDRs:
+    - "0.0.0.0/0"
+  cloudEgressExceptCIDRs:
+    - "10.0.0.0/8"
+    - "172.16.0.0/12"
+    - "192.168.0.0/16"
+  # Extra ingress peers permitted to reach the forwarder, as NetworkPolicyPeer
+  # objects. Instrumented workloads in OTHER namespaces need an entry here.
+  extraForwarderIngressFrom: []
+
+# Optional PodDisruptionBudgets for the control-plane deployments. Off by
+# default: at replicas=1 a PDB blocks node drains rather than protecting
+# anything.
+pdb:
+  enabled: false
+  minAvailable: 1
+
+# Cloud-issued tenant identity. NONE of this is configuration: the Speedscale
+# cloud issues it in exchange for the API key at startup, so no value exists
+# when `helm template` runs. S-12914 owns how a namespaced install resolves it;
+# until then the forwarder will not become ready without these set.
+tenant:
+  id: ""
+  name: ""
+  bucket: ""
+  region: ""
+  stream: ""
+  subTenantName: "default"

@@ -1,0 +1,14 @@
+# Trips: forbidden-kind. A DaemonSet schedules a pod on every node in the
+# cluster, which is exactly the reach a namespaced install disclaims.
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: speedscale-nettap
+  namespace: speedscale
+spec:
+  template:
+    spec:
+      containers:
+      - name: nettap
+        image: gcr.io/speedscale/nettap:v1
