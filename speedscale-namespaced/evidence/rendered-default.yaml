@@ -140,11 +140,20 @@ metadata:
     app: speedscale-replay-coordinator
     controlplane.speedscale.com/component: replay-coordinator
 data:
-  # NEEDS SYNC WITH S-12919. Every key below is a chart-side name for something
-  # operator/replaycoordinator.Config already models; the startup path that
-  # reads them is being written under S-12919. Renaming a key here without
-  # renaming it there produces a coordinator that starts with defaults and
-  # silently instruments the wrong Service.
+  # S-12919 config-key sync follow-up: every key below now matches a real
+  # operator/settings field by exact name (uppercase(mapstructure tag), viper
+  # AutomaticEnv) and has a genuine consumer in operator/replaycoordinator.
+  # Renaming a key here without renaming the settings field produces a
+  # coordinator that starts with defaults and silently instruments the wrong
+  # Service -- keep the two in lockstep, and re-run
+  # operator/settings.TestLoadConfig_NamespacedChartKeys after any rename.
+  #
+  # Three keys this ConfigMap used to render were deleted rather than synced,
+  # because nothing on the operator side reads them today (see the S-12919
+  # follow-up report for the grep trail): FORWARDER_SERVICE_NAME,
+  # SIDECAR_ENABLE_DIAGNOSTICS, and SPEEDSCALE_CONTROL_PLANE_NAMESPACE (the
+  # coordinator already learns its namespace from the POD_NAMESPACE
+  # downward-API env var on the Deployment, below).
   CLUSTER_NAME: 'my-cluster'
   LOG_LEVEL: 'info'
   PROCESS_ID: 'my-cluster-speedscale'
@@ -154,11 +163,11 @@ data:
   # Names the installation provisioned. Config.Names exists precisely so a
   # namespaced install pins nothing to a cluster-wide default.
   API_KEY_SECRET_NAME: 'speedscale-apikey'
-  SPEEDSCALE_TLS_SECRET_NAME: 'speedscale-certs'
-  SPEEDSCALE_CONTROL_PLANE_NAMESPACE: 'speedscale'
-  # Capture wiring handed to instrumented workloads.
-  FORWARDER_SERVICE_NAME: 'speedscale-forwarder'
-  SIDECAR_ENABLE_DIAGNOSTICS: "false"
+  TLS_SECRET_NAME: 'speedscale-certs'
+  # Capture wiring handed to instrumented workloads. capture.enableDiagnostics
+  # is deliberately NOT rendered here: build.SidecarConfigOverride has no field
+  # for it yet, so there is nowhere on the operator side for the value to land
+  # (see capture.enableDiagnostics in values.yaml).
   SIDECAR_REINITIALIZE_IPTABLES: "false"
   # Loop timings (Go durations).
   RESYNC_INTERVAL: "10s"
@@ -787,7 +796,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 'e75fb95c2a53d736b2cd9f3282f15e34cbfce4d0674de152ecf12a16cf0d704d'
+        checksum/config: 'b4eb320a92fba612b7579e583c2af4b8d97e1579903373e25b2a4ca3580628f3'
       labels:
         app: speedscale-replay-coordinator
         controlplane.speedscale.com/component: replay-coordinator
@@ -806,11 +815,13 @@ spec:
         image: 'gcr.io/speedscale/operator:v2.5.878'
         imagePullPolicy: 'Always'
         env:
-        # NEEDS SYNC WITH S-12919. This is the switch that selects the
-        # namespaced startup path (operator/replaycoordinator.Runtime) over the
-        # classic controller-runtime manager. The name is this chart's proposal;
-        # if S-12919 lands a different one, change it HERE and in
-        # evidence/CAPABILITIES.md, and re-run tests/denylist.sh.
+        # This is the switch that selects the namespaced startup path
+        # (operator/replaycoordinator.Runtime) over the classic
+        # controller-runtime manager. Confirmed synced against
+        # operator/settings (mapstructure:"speedscale_namespaced_mode") by the
+        # S-12919 config-key sync follow-up; re-run
+        # operator/settings.TestLoadConfig_NamespacedChartKeys and
+        # tests/denylist.sh before renaming it.
         - name: SPEEDSCALE_NAMESPACED_MODE
           value: "true"
         - name: POD_NAME
@@ -819,13 +830,22 @@ spec:
               fieldPath: metadata.name
         # The only namespace the coordinator reads requests from or creates
         # anything in. It is the release namespace by construction; there is no
-        # value that widens it.
+        # value that widens it. Read operator-side as POD_NAMESPACE
+        # (mapstructure:"pod_namespace"), the same downward-API convention
+        # every other Speedscale component uses -- there is deliberately no
+        # separate "control plane namespace" key.
         - name: POD_NAMESPACE
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        - name: SPEEDSCALE_REPLAY_RUNTIME_SERVICE_ACCOUNT
-          value: 'speedscale'
+        # SPEEDSCALE_REPLAY_RUNTIME_SERVICE_ACCOUNT was deleted here (S-12919
+        # config-key sync follow-up): operator/replaycoordinator/provisioner.go
+        # always derives the replay runtime ServiceAccount name itself, per
+        # replay, via build.SvcAccountName(envID) -- it never reads a
+        # configured name, dynamic or static. Wiring the coordinator to the
+        # static, chart-rendered account in templates/replay-runtime-rbac.yaml
+        # (speedscale.replayRuntimeName) is unstarted work, tracked outside
+        # this follow-up.
         envFrom:
         - configMapRef:
             name: speedscale-replay-coordinator
@@ -975,10 +995,15 @@ metadata:
     helm.sh/hook-weight: "10"
     helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
 spec:
-  # One shot. A retried cleanup that keeps failing just stretches the uninstall
-  # out to the deadline; forceCleanupOnUninstall is the supported escape hatch.
-  backoffLimit: 0
-  activeDeadlineSeconds: 300
+  # One retry: the command is idempotent and a crashed run resumes cleanly, so
+  # a transient API failure gets a second chance instead of stretching the
+  # uninstall to the deadline. forceCleanupOnUninstall is the escape hatch for
+  # cleanup that legitimately refuses.
+  backoffLimit: 1
+  # The process bounds its own work at --timeout and gives itself ~30s beyond
+  # it for the capture scan and the force-mode recovery write; the pod deadline
+  # sits comfortably above both plus startup.
+  activeDeadlineSeconds: 420
   ttlSecondsAfterFinished: 60
   template:
     metadata:
@@ -996,26 +1021,24 @@ spec:
         supplementalGroups:
         - 2100
       containers:
-      # ###################################################################
-      # PLACEHOLDER ENTRYPOINT -- OWNED BY S-12933.
-      #
-      # The cleanup logic itself does not exist yet. This chart renders the Job
-      # that will invoke it, with the arguments settled, so the hook wiring,
-      # the RBAC and the timeout are reviewable now and S-12933 only has to add
-      # the subcommand behind this path.
-      #
-      # Contract this Job assumes of `operator namespaced-cleanup`:
+      # Contract of `operator namespaced-cleanup` (implemented in the operator
+      # binary): cancel non-terminal replay requests, wait until every request
+      # is terminal and finalizer-free, then scan capture inventories AND live
+      # sidecar mutations; it never patches workloads itself.
       #   --namespace <ns>        the only namespace it may act on
-      #   --timeout <duration>    wall-clock budget; must exit before
-      #                           activeDeadlineSeconds kills the pod
-      #   --force                 exit 0 even when cleanup is incomplete
-      #   exit 0 -> uninstall proceeds; non-zero -> `helm uninstall` fails and
-      #   the release stays, unless --force was passed.
-      #
-      # Until S-12933 lands, an image without the subcommand exits non-zero,
-      # which BLOCKS `helm uninstall` unless uninstall.forceCleanupOnUninstall
-      # is set (default false) or uninstall.enabled is turned off.
-      # ###################################################################
+      #   --timeout <duration>    wall-clock budget for the replay wait; the
+      #                           process exits within ~30s past it
+      #   --force                 strip finalizers and permit uninstall with
+      #                           active capture, ONLY after writing the
+      #                           speedscale-uninstall-recovery ConfigMap
+      #                           (deliberately not Helm-managed, so it
+      #                           survives the uninstall as the evidence)
+      # Exit codes: 0 safe to uninstall; 1 refused (found active replay
+      # cleanup or injected capture - output names the exact uninject command
+      # per workload); 2 bad invocation; 3 the check could not be completed.
+      # Any non-zero exit fails this Job and blocks `helm uninstall`.
+      # An image older than the subcommand exits non-zero too, which blocks
+      # uninstall unless uninstall.enabled is turned off.
       - name: cleanup
         image: 'gcr.io/speedscale/operator:v2.5.878'
         imagePullPolicy: 'Always'

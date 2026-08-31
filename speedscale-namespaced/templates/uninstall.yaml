@@ -137,10 +137,15 @@ metadata:
     helm.sh/hook-weight: "10"
     helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
 spec:
-  # One shot. A retried cleanup that keeps failing just stretches the uninstall
-  # out to the deadline; forceCleanupOnUninstall is the supported escape hatch.
-  backoffLimit: 0
-  activeDeadlineSeconds: {{ $deadline }}
+  # One retry: the command is idempotent and a crashed run resumes cleanly, so
+  # a transient API failure gets a second chance instead of stretching the
+  # uninstall to the deadline. forceCleanupOnUninstall is the escape hatch for
+  # cleanup that legitimately refuses.
+  backoffLimit: 1
+  # The process bounds its own work at --timeout and gives itself ~30s beyond
+  # it for the capture scan and the force-mode recovery write; the pod deadline
+  # sits comfortably above both plus startup.
+  activeDeadlineSeconds: {{ add $deadline 120 }}
   ttlSecondsAfterFinished: 60
   template:
     metadata:
@@ -160,26 +165,24 @@ spec:
       serviceAccountName: speedscale-uninstall
       securityContext: {{- toYaml .Values.globalSecurityContext | nindent 8 }}
       containers:
-      # ###################################################################
-      # PLACEHOLDER ENTRYPOINT -- OWNED BY S-12933.
-      #
-      # The cleanup logic itself does not exist yet. This chart renders the Job
-      # that will invoke it, with the arguments settled, so the hook wiring,
-      # the RBAC and the timeout are reviewable now and S-12933 only has to add
-      # the subcommand behind this path.
-      #
-      # Contract this Job assumes of `operator namespaced-cleanup`:
+      # Contract of `operator namespaced-cleanup` (implemented in the operator
+      # binary): cancel non-terminal replay requests, wait until every request
+      # is terminal and finalizer-free, then scan capture inventories AND live
+      # sidecar mutations; it never patches workloads itself.
       #   --namespace <ns>        the only namespace it may act on
-      #   --timeout <duration>    wall-clock budget; must exit before
-      #                           activeDeadlineSeconds kills the pod
-      #   --force                 exit 0 even when cleanup is incomplete
-      #   exit 0 -> uninstall proceeds; non-zero -> `helm uninstall` fails and
-      #   the release stays, unless --force was passed.
-      #
-      # Until S-12933 lands, an image without the subcommand exits non-zero,
-      # which BLOCKS `helm uninstall` unless uninstall.forceCleanupOnUninstall
-      # is set (default false) or uninstall.enabled is turned off.
-      # ###################################################################
+      #   --timeout <duration>    wall-clock budget for the replay wait; the
+      #                           process exits within ~30s past it
+      #   --force                 strip finalizers and permit uninstall with
+      #                           active capture, ONLY after writing the
+      #                           speedscale-uninstall-recovery ConfigMap
+      #                           (deliberately not Helm-managed, so it
+      #                           survives the uninstall as the evidence)
+      # Exit codes: 0 safe to uninstall; 1 refused (found active replay
+      # cleanup or injected capture - output names the exact uninject command
+      # per workload); 2 bad invocation; 3 the check could not be completed.
+      # Any non-zero exit fails this Job and blocks `helm uninstall`.
+      # An image older than the subcommand exits non-zero too, which blocks
+      # uninstall unless uninstall.enabled is turned off.
       - name: cleanup
         image: '{{ .Values.image.registry }}/operator:{{ .Values.image.tag }}'
         imagePullPolicy: '{{ .Values.image.pullPolicy }}'

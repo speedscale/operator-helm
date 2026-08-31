@@ -14,11 +14,20 @@ metadata:
   annotations: {{ toYaml . | nindent 4 }}
   {{- end }}
 data:
-  # NEEDS SYNC WITH S-12919. Every key below is a chart-side name for something
-  # operator/replaycoordinator.Config already models; the startup path that
-  # reads them is being written under S-12919. Renaming a key here without
-  # renaming it there produces a coordinator that starts with defaults and
-  # silently instruments the wrong Service.
+  # S-12919 config-key sync follow-up: every key below now matches a real
+  # operator/settings field by exact name (uppercase(mapstructure tag), viper
+  # AutomaticEnv) and has a genuine consumer in operator/replaycoordinator.
+  # Renaming a key here without renaming the settings field produces a
+  # coordinator that starts with defaults and silently instruments the wrong
+  # Service -- keep the two in lockstep, and re-run
+  # operator/settings.TestLoadConfig_NamespacedChartKeys after any rename.
+  #
+  # Three keys this ConfigMap used to render were deleted rather than synced,
+  # because nothing on the operator side reads them today (see the S-12919
+  # follow-up report for the grep trail): FORWARDER_SERVICE_NAME,
+  # SIDECAR_ENABLE_DIAGNOSTICS, and SPEEDSCALE_CONTROL_PLANE_NAMESPACE (the
+  # coordinator already learns its namespace from the POD_NAMESPACE
+  # downward-API env var on the Deployment, below).
   CLUSTER_NAME: '{{ .Values.clusterName }}'
   LOG_LEVEL: '{{ .Values.logLevel }}'
   PROCESS_ID: '{{ include "speedscale.instanceID" . }}'
@@ -28,14 +37,14 @@ data:
   # Names the installation provisioned. Config.Names exists precisely so a
   # namespaced install pins nothing to a cluster-wide default.
   API_KEY_SECRET_NAME: '{{ include "speedscale.apiKeySecretName" . }}'
-  SPEEDSCALE_TLS_SECRET_NAME: '{{ include "speedscale.certsSecretName" . }}'
+  TLS_SECRET_NAME: '{{ include "speedscale.certsSecretName" . }}'
   {{- if .Values.tls.createJKS }}
-  SPEEDSCALE_JKS_SECRET_NAME: '{{ .Values.tls.jksSecret | default "speedscale-jks" }}'
+  JKS_SECRET_NAME: '{{ .Values.tls.jksSecret | default "speedscale-jks" }}'
   {{- end }}
-  SPEEDSCALE_CONTROL_PLANE_NAMESPACE: '{{ .Release.Namespace }}'
-  # Capture wiring handed to instrumented workloads.
-  FORWARDER_SERVICE_NAME: '{{ .Values.capture.forwarderServiceName }}'
-  SIDECAR_ENABLE_DIAGNOSTICS: {{ .Values.capture.enableDiagnostics | quote }}
+  # Capture wiring handed to instrumented workloads. capture.enableDiagnostics
+  # is deliberately NOT rendered here: build.SidecarConfigOverride has no field
+  # for it yet, so there is nowhere on the operator side for the value to land
+  # (see capture.enableDiagnostics in values.yaml).
   SIDECAR_REINITIALIZE_IPTABLES: {{ .Values.capture.reinitializeIptables | quote }}
   # Loop timings (Go durations).
   RESYNC_INTERVAL: {{ .Values.replayCoordinator.resyncInterval | default "10s" | quote }}

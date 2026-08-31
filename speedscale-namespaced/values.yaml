@@ -163,8 +163,19 @@ replayRuntime:
 capture:
   # Service the injected sidecar ships captured traffic to. Must resolve from
   # the instrumented workload's namespace.
+  #
+  # NOT YET WIRED to the operator (S-12919 config-key sync follow-up):
+  # operator/replaycoordinator hardcodes kube.NameForwarder ("speedscale-forwarder")
+  # rather than reading a configured name, so changing this value has no
+  # effect yet. Left in place, at the value the operator hardcodes, for
+  # forward compatibility once that's threaded through.
   forwarderServiceName: "speedscale-forwarder"
   # Write sidecar diagnostics to the pod's ephemeral volume.
+  #
+  # NOT YET WIRED to the operator (S-12919 config-key sync follow-up):
+  # build.SidecarConfigOverride has no field to carry an install-wide default
+  # for this (it is annotation-only today), so this value currently has no
+  # effect. Tracked separately from reinitializeIptables below, which IS wired.
   enableDiagnostics: false
   # Re-apply the sidecar's iptables rules on restart. Needed where another
   # component rewrites the pod's nat table after Speedscale's init container.

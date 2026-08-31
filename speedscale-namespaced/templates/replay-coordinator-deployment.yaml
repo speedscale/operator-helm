@@ -51,11 +51,13 @@ spec:
         image: '{{ .Values.image.registry }}/operator:{{ .Values.image.tag }}'
         imagePullPolicy: '{{ .Values.image.pullPolicy }}'
         env:
-        # NEEDS SYNC WITH S-12919. This is the switch that selects the
-        # namespaced startup path (operator/replaycoordinator.Runtime) over the
-        # classic controller-runtime manager. The name is this chart's proposal;
-        # if S-12919 lands a different one, change it HERE and in
-        # evidence/CAPABILITIES.md, and re-run tests/denylist.sh.
+        # This is the switch that selects the namespaced startup path
+        # (operator/replaycoordinator.Runtime) over the classic
+        # controller-runtime manager. Confirmed synced against
+        # operator/settings (mapstructure:"speedscale_namespaced_mode") by the
+        # S-12919 config-key sync follow-up; re-run
+        # operator/settings.TestLoadConfig_NamespacedChartKeys and
+        # tests/denylist.sh before renaming it.
         - name: SPEEDSCALE_NAMESPACED_MODE
           value: "true"
         - name: POD_NAME
@@ -64,13 +66,22 @@ spec:
               fieldPath: metadata.name
         # The only namespace the coordinator reads requests from or creates
         # anything in. It is the release namespace by construction; there is no
-        # value that widens it.
+        # value that widens it. Read operator-side as POD_NAMESPACE
+        # (mapstructure:"pod_namespace"), the same downward-API convention
+        # every other Speedscale component uses -- there is deliberately no
+        # separate "control plane namespace" key.
         - name: POD_NAMESPACE
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        - name: SPEEDSCALE_REPLAY_RUNTIME_SERVICE_ACCOUNT
-          value: '{{ include "speedscale.replayRuntimeName" . }}'
+        # SPEEDSCALE_REPLAY_RUNTIME_SERVICE_ACCOUNT was deleted here (S-12919
+        # config-key sync follow-up): operator/replaycoordinator/provisioner.go
+        # always derives the replay runtime ServiceAccount name itself, per
+        # replay, via build.SvcAccountName(envID) -- it never reads a
+        # configured name, dynamic or static. Wiring the coordinator to the
+        # static, chart-rendered account in templates/replay-runtime-rbac.yaml
+        # (speedscale.replayRuntimeName) is unstarted work, tracked outside
+        # this follow-up.
         envFrom:
         - configMapRef:
             name: speedscale-replay-coordinator

@@ -49,7 +49,7 @@ replay coordinator performs.
 | `speedscale-init-iptables` (init) | `goproxy` | `NET_RAW`, `NET_ADMIN` | Transparent proxy modes — the ones that rewrite the pod's `nat` table |
 | `speedscale-init-smartdns` (init) | `goproxy` | `NET_RAW`, `NET_ADMIN` | Unless smart DNS is disabled |
 | `speedscale-goproxy` (sidecar) | `goproxy` | `NET_RAW` | Always |
-| `speedscale-goproxy` (sidecar) | `goproxy` | `NET_RAW` **and** `NET_ADMIN` | Only when `capture.enableDiagnostics` or `capture.reinitializeIptables` is on |
+| `speedscale-goproxy` (sidecar) | `goproxy` | `NET_RAW` **and** `NET_ADMIN` | Only when `capture.reinitializeIptables` is on |
 
 Why each is needed:
 
@@ -63,13 +63,18 @@ Why each is needed:
 Both init containers run `runAsUser: 0` with `allowPrivilegeEscalation` and
 `privileged` following `privilegedSidecars` (false by default). The long-running
 sidecar runs as the unprivileged `goproxy` user, and holds only `NET_RAW` unless
-one of the two diagnostic values above is turned on.
+`capture.reinitializeIptables` is turned on.
 
-**The narrowest configuration:** leave `capture.enableDiagnostics` and
-`capture.reinitializeIptables` at their defaults (both `false`) and the sidecar
-that runs for the whole life of the instrumented pod holds `NET_RAW` alone —
-`NET_ADMIN` is then held only by an init container that exits before the
-application starts.
+`capture.enableDiagnostics` is NOT in this table: as of the S-12919 config-key
+sync follow-up it is confirmed not wired to the operator at all (no field on
+`build.SidecarConfigOverride` exists to carry an install-wide default for it),
+so today it cannot affect a running sidecar's capabilities regardless of its
+value. See `capture.enableDiagnostics` in values.yaml.
+
+**The narrowest configuration:** leave `capture.reinitializeIptables` at its
+default (`false`) and the sidecar that runs for the whole life of the
+instrumented pod holds `NET_RAW` alone — `NET_ADMIN` is then held only by an
+init container that exits before the application starts.
 
 ### Pod Security Admission exemption required
 

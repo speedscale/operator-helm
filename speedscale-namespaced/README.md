@@ -106,9 +106,9 @@ Full annotated defaults in [`values.yaml`](./values.yaml), validated by
 | `replayCoordinator.leaseEnabled` | `false` | `coordination.k8s.io` Lease |
 | `replayRuntime.enabled` | `true` | static SA + Role for generator/responder/collector |
 | `secretAccessList` | `[]` | empty means **no Secret rule at all** |
-| `capture.forwarderServiceName` | `speedscale-forwarder` | |
-| `capture.enableDiagnostics` | `false` | turning either of these on adds `NET_ADMIN` to the long-running sidecar |
-| `capture.reinitializeIptables` | `false` | |
+| `capture.forwarderServiceName` | `speedscale-forwarder` | not yet wired to the operator — see values.yaml |
+| `capture.enableDiagnostics` | `false` | not yet wired to the operator — see values.yaml. Once it is, turning it (or `reinitializeIptables`) on adds `NET_ADMIN` to the long-running sidecar |
+| `capture.reinitializeIptables` | `false` | wired — becomes `SIDECAR_REINITIALIZE_IPTABLES`, read by `operator/settings` |
 | `tls.create` | `true` | renders `speedscale-certs` |
 | `tls.certsSecret` | `""` | required when `tls.create: false` |
 | `tls.createJKS` | `false` | renders the keystore Secret + a root-running hook Job |
