@@ -21,6 +21,10 @@ data:
   IMAGE_PULL_POLICY: '{{ .Values.image.pullPolicy }}'
   LOG_LEVEL: '{{ .Values.logLevel }}'
   PROCESS_ID: '{{ include "speedscale.instanceID" . }}'
+  # Namespaced-mode gate (S-12897 E2E NEW-5/NEW-6): scopes topology service
+  # sync / Istio detection / Rollout watching to this namespace. Not emitted
+  # by the classic runtime builders - carried as a reviewed parity exemption.
+  SPEEDSCALE_NAMESPACED_MODE: 'true'
   SPEEDSCALE_DLP_CONFIG: '{{ .Values.dlp.config }}'
   SPEEDSCALE_DLP_CONFIG_FILE: /etc/speedscale/dlp/dlp.json
   SPEEDSCALE_FILTER_CONFIG_FILE: /etc/speedscale/filter/filter.json
