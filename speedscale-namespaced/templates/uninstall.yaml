@@ -186,8 +186,15 @@ spec:
       - name: cleanup
         image: '{{ .Values.image.registry }}/operator:{{ .Values.image.tag }}'
         imagePullPolicy: '{{ .Values.image.pullPolicy }}'
+        # /app, not /speedscale/operator: every Speedscale image built by
+        # tools/build/Dockerfile.default COPYs the binary to the fixed path /app
+        # and sets ENTRYPOINT ["/app"] (the entrypoint cannot expand build args,
+        # so the binary is renamed on the way in). The operator project has no
+        # Dockerfile of its own, so it uses that default. A wrong command path
+        # here is invisible until uninstall time and then fails as StartError
+        # 128 with zero container logs, leaving the release permanently stuck.
         command:
-        - /speedscale/operator
+        - /app
         args:
         - namespaced-cleanup
         - --namespace

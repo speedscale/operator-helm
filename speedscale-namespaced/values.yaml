@@ -26,9 +26,11 @@ apiKeySecret: "speedscale-apikey"
 
 # Shared per-install instance id. It becomes PROCESS_ID in BOTH the forwarder
 # and inspector ConfigMaps, which the parity harness asserts must match
-# (operator/controlplane/parity/invariants.go). Leave empty and the chart falls
-# back to the existing forwarder ConfigMap's value, then to a generated id --
-# see templates/_helpers.tpl for why the fallback order matters.
+# (operator/controlplane/parity/invariants.go), and INSTANCE_ID in the replay
+# coordinator's -- the coordinator is the operator binary, which reads the same
+# id under its own name. Leave empty and the chart falls back to the existing
+# forwarder ConfigMap's value, then to a generated id -- see
+# templates/_helpers.tpl for why the fallback order matters.
 instanceID: ""
 
 # Log level for all Speedscale components.
@@ -157,6 +159,14 @@ replayCoordinator:
 replayRuntime:
   enabled: true
   serviceAccountName: "speedscale"
+  # Grant the replay's own pods read access to the namespaced metrics.k8s.io Pod
+  # metrics API, for report enrichment only. Off by default for the same reason
+  # inspector.metricsEnabled is: Kubernetes RBAC escalation prevention means a
+  # namespace admin cannot create a Role granting a permission they do not hold,
+  # and on a cluster without metrics-server the API group does not exist at all,
+  # so nobody can. Leaving it ungated made the chart impossible to install for
+  # exactly the user it is written for. Enrichment degrades without it.
+  metricsEnabled: false
 
 # Traffic capture (sidecar / init container) settings the coordinator hands to
 # workloads it instruments.

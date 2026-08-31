@@ -153,7 +153,8 @@
       "required": ["enabled", "serviceAccountName"],
       "properties": {
         "enabled": { "type": "boolean" },
-        "serviceAccountName": { "type": "string", "minLength": 1 }
+        "serviceAccountName": { "type": "string", "minLength": 1 },
+        "metricsEnabled": { "type": "boolean" }
       }
     },
     "capture": {

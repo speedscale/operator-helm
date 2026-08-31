@@ -94,17 +94,18 @@ Full annotated defaults in [`values.yaml`](./values.yaml), validated by
 |---|---|---|
 | `clusterName` | `my-cluster` | as it appears in the Speedscale dashboard |
 | `apiKeySecret` | `speedscale-apikey` | referenced, **never created** |
-| `instanceID` | `""` | shared `PROCESS_ID` for forwarder + inspector; derived when empty |
+| `instanceID` | `""` | one shared id: `PROCESS_ID` for forwarder + inspector, `INSTANCE_ID` for the replay coordinator; derived when empty |
 | `image.registry` / `image.tag` | `gcr.io/speedscale` / `v2.5.878` | |
 | `image.pullSecrets` | `[]` | referenced, never created |
 | `forwarder.enabled` | `true` | |
 | `forwarder.telemetryInterval` | `1m0s` | Go `time.Duration` **String() form** — `60s` and `1m0s` are the same duration but not the same string, and the value is copied verbatim into the ConfigMap |
 | `inspector.enabled` | `true` | |
-| `inspector.metricsEnabled` | `false` | namespaced `metrics.k8s.io` read |
+| `inspector.metricsEnabled` | `false` | namespaced `metrics.k8s.io` read — opt-in, see below |
 | `inspector.jobsEnabled` | `true` | namespaced `batch/jobs` read |
 | `replayCoordinator.enabled` | `true` | |
 | `replayCoordinator.leaseEnabled` | `false` | `coordination.k8s.io` Lease |
 | `replayRuntime.enabled` | `true` | static SA + Role for generator/responder/collector |
+| `replayRuntime.metricsEnabled` | `false` | namespaced `metrics.k8s.io` read — opt-in, see below |
 | `secretAccessList` | `[]` | empty means **no Secret rule at all** |
 | `capture.forwarderServiceName` | `speedscale-forwarder` | not yet wired to the operator — see values.yaml |
 | `capture.enableDiagnostics` | `false` | not yet wired to the operator — see values.yaml. Once it is, turning it (or `reinitializeIptables`) on adds `NET_ADMIN` to the long-running sidecar |
@@ -119,13 +120,45 @@ Full annotated defaults in [`values.yaml`](./values.yaml), validated by
 | `pdb.enabled` | `false` | at `replicas: 1` a PDB blocks node drains rather than protecting anything |
 | `tenant.*` | `""` | cloud-issued identity — see below |
 
+### Pod metrics are opt-in, in both places
+
+`inspector.metricsEnabled` and `replayRuntime.metricsEnabled` are the only two
+values that add a `metrics.k8s.io` rule, and both default to **off**. That is not
+caution for its own sake — it is what makes the chart installable by the person
+it is written for:
+
+* **RBAC escalation prevention.** Kubernetes refuses to let a subject create a
+  `Role` granting a permission the subject does not itself hold. A namespace
+  admin who has never been granted `metrics.k8s.io/pods` therefore cannot
+  `helm install` a chart that unconditionally renders that rule — the install
+  fails at Role creation, not at runtime.
+* **Clusters without metrics-server have no such API group at all**, so on those
+  clusters *nobody* can create the rule, escalation check or not.
+
+Turn either on only if your installing identity already holds
+`metrics.k8s.io/pods` read in the namespace. Leaving them off costs per-pod
+CPU/memory enrichment in reports and nothing else: the consumer degrades on a
+403 or a missing API rather than failing the replay.
+
 ### Tenant identity is not yet resolved
 
 `tenant.id`, `.name`, `.bucket`, `.region`, `.stream` are issued by the
 Speedscale cloud in exchange for the API key at startup. No value for them
-exists when `helm template` runs, so the chart renders them empty and the
-forwarder will not become ready until they are supplied. **S-12914** owns how a
-namespaced install obtains them. Until it lands, pass them explicitly.
+exists when `helm template` runs, so the chart renders them empty and neither
+the forwarder nor the replay coordinator will become ready until they are
+supplied. **S-12914** owns how a namespaced install obtains them. Until it
+lands, pass them explicitly — and pass **all five**:
+
+```bash
+helm upgrade speedscale ./speedscale-namespaced -n speedscale \
+  --set tenant.id=... --set tenant.name=... --set tenant.bucket=... \
+  --set tenant.region=... --set tenant.stream=...
+```
+
+A partial set is the same as none. The components consider their identity
+resolved only when the stream *and* all four root-tenant fields (id, name,
+region, bucket) are non-empty, so setting just `tenant.id` and `tenant.name`
+leaves them exactly as unready as setting nothing.
 
 ---
 
@@ -136,14 +169,32 @@ helm -n speedscale uninstall speedscale
 ```
 
 A `pre-delete` Job returns instrumented workloads to their original state
-first, within `uninstall.cleanupTimeout`. If it fails, the uninstall fails and
-the release stays — set `uninstall.forceCleanupOnUninstall=true` to proceed
-anyway, at the cost of leaving Speedscale sidecars behind.
+first, within `uninstall.cleanupTimeout`. It runs the operator image's
+`namespaced-cleanup` subcommand (**S-12933**). If it fails, the uninstall fails
+and the release stays — set `uninstall.forceCleanupOnUninstall=true` to proceed
+anyway, at the cost of leaving Speedscale sidecars behind, or
+`uninstall.enabled=false` to skip the hook entirely.
 
-> The cleanup entrypoint itself ships under **S-12933**. Until then the Job
-> invokes a documented placeholder command that does not exist, so an uninstall
-> will block unless you set `uninstall.forceCleanupOnUninstall=true` or
-> `uninstall.enabled=false`.
+An image older than that subcommand exits non-zero and blocks the uninstall the
+same way.
+
+### Cleaning up after a failed uninstall hook
+
+The Job carries `ttlSecondsAfterFinished: 60`, which the TTL controller applies
+to a **successful** Job. A Job that fails is left in place on purpose — its pod
+logs are the only record of why the uninstall refused — and Helm will not remove
+it, because the release it belonged to was never deleted. Read the logs, fix the
+cause, then delete the Job before retrying:
+
+```bash
+kubectl -n speedscale logs job/speedscale-uninstall
+kubectl -n speedscale delete job speedscale-uninstall
+helm -n speedscale uninstall speedscale
+```
+
+The Job's `helm.sh/hook-delete-policy` includes `before-hook-creation`, so a
+retry would replace it anyway; deleting it by hand just makes the next attempt's
+logs unambiguous.
 
 ---
 

@@ -8,7 +8,11 @@ helper differs from the spike's generated seed the reason is stated inline.
 
 {{/*
 speedscale.instanceID is the per-install id that becomes PROCESS_ID in BOTH the
-forwarder and inspector ConfigMaps.
+forwarder and inspector ConfigMaps, and INSTANCE_ID in the replay coordinator's.
+One id, three ConfigMaps, two key names: the forwarder and inspector are built
+by lib/kube/build (PROCESS_ID), the coordinator is the operator binary and reads
+`mapstructure:"instance_id"` -> INSTANCE_ID, which Settings.Validate() requires
+to be non-blank.
 
 The operator generates ONE settings.InstanceID per process and hands it to both
 components. Helm has no process to generate it in, and `uuidv4` is re-evaluated

@@ -9,6 +9,9 @@ transcription of build.StaticReplayRuntimeRules() (lib/kube/build/rbac.go);
 lib/kube/build/rbac_test.go pins those against ReplayRole's actual output so the
 two provisioning paths cannot drift.
 
+One deliberate deviation: the metrics.k8s.io rule is gated behind
+replayRuntime.metricsEnabled (default off). See the comment on that rule.
+
 Names match build.StaticReplayRuntimeRoleName() / SvcAccountName("") so the
 replay components find the account they already look for.
 */}}
@@ -46,9 +49,20 @@ metadata:
   annotations: {{ toYaml . | nindent 4 }}
   {{- end }}
 rules:
-# Optional in practice: a cluster with no metrics-server has no such API, and
-# the 403 must degrade report enrichment rather than fail the replay. That
-# fallback lives in the collector/report reader, not here.
+{{- if .Values.replayRuntime.metricsEnabled }}
+# Opt-in, and OFF by default, for the same reason the inspector's identical rule
+# is (inspector.metricsEnabled): Kubernetes RBAC escalation prevention forbids
+# creating a Role granting a permission the installer does not itself hold, so a
+# namespace-admin customer installing this chart cannot create this rule -- and
+# on a cluster with no metrics-server the metrics.k8s.io API group does not
+# exist, so nobody can. Ungated, this one rule made the whole chart
+# uninstallable for its target user.
+#
+# It is optional in practice anyway: a 403 (or a missing API) must degrade
+# report enrichment rather than fail the replay, and that fallback lives in the
+# collector/report reader, not here. build.StaticReplayRuntimeRules()
+# (lib/kube/build/rbac.go) documents the same optionality; a default render is
+# therefore a deliberate subset of that rule list, not drift.
 - apiGroups:
   - metrics.k8s.io
   resources:
@@ -57,6 +71,7 @@ rules:
   - get
   - list
   - watch
+{{- end }}
 - apiGroups:
   - ""
   resources:

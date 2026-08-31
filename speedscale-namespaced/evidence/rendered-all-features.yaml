@@ -349,9 +349,22 @@ data:
   # downward-API env var on the Deployment, below).
   CLUSTER_NAME: 'everything-cluster'
   LOG_LEVEL: 'debug'
-  PROCESS_ID: 'everything-instance-id'
+  # INSTANCE_ID, not PROCESS_ID. This ConfigMap feeds the OPERATOR binary, whose
+  # settings field is `mapstructure:"instance_id"` -> INSTANCE_ID (viper
+  # AutomaticEnv), and Settings.Validate() makes a blank InstanceID a FATAL
+  # startup error ("InstanceID: cannot be blank"). PROCESS_ID is the FORWARDER's
+  # and inspector's name for the same id (lib/kube/build/forwarder.go,
+  # inspector.go, forwarder/stats/stats.go) -- those ConfigMaps keep it, and the
+  # parity harness asserts the two match. Same value, two binaries, two names.
+  INSTANCE_ID: 'everything-instance-id'
   CONTAINER_REGISTRY: 'gcr.io/speedscale'
-  CONTAINER_TYPE: 'v9.9.9'
+  # IMAGE_TAG, not CONTAINER_TYPE, for the same reason: the operator reads
+  # `mapstructure:"image_tag"` and defaults it to "latest" when unset, so the
+  # pinned .Values.image.tag was being silently discarded and every replay
+  # component came up on :latest. operator/controllers/operator_configmap.go's
+  # propagatedKeys map is the canonical statement of the rename
+  # (IMAGE_TAG -> CONTAINER_TYPE) as a value crosses from operator to forwarder.
+  IMAGE_TAG: 'v9.9.9'
   IMAGE_PULL_POLICY: 'IfNotPresent'
   # Names the installation provisioned. Config.Names exists precisely so a
   # namespaced install pins nothing to a cluster-wide default.
@@ -367,9 +380,23 @@ data:
   RESYNC_INTERVAL: "5s"
   PROVISIONING_TIMEOUT: "2m0s"
   # Cloud-issued tenant identity; same S-12914 hole as the forwarder's.
+  #
+  # ALL SIX keys, not three. The operator resolves its tenant identity from
+  # settings.updateTenant() -> schema.SubTenant.Incomplete(), which is false
+  # only when Stream, and the root Tenant's ID, Name, Region AND Bucket are all
+  # non-empty (lib/schema/tenant.go). Rendering only ID/Name/SubTenantName left
+  # the identity permanently incomplete, so the documented "supply tenant.* by
+  # hand" escape hatch could never actually work. The operator's env names for
+  # these happen to match the forwarder's, but they are read through the
+  # operator's own mapstructure tags (tenant_id, tenant_name, tenant_bucket,
+  # tenant_region, sub_tenant_name, sub_tenant_stream in operator/settings) --
+  # not inherited from the forwarder ConfigMap.
   TENANT_ID: 'everything-tenant'
   TENANT_NAME: 'everything'
+  TENANT_BUCKET: 'everything-bucket'
+  TENANT_REGION: 'us-east-1'
   SUB_TENANT_NAME: 'default'
+  SUB_TENANT_STREAM: 'everything-stream'
 
 ---
 # Source: speedscale-namespaced/templates/forwarder-rbac.yaml
@@ -648,9 +675,19 @@ metadata:
   annotations: 
     example.com/owner: platform-team
 rules:
-# Optional in practice: a cluster with no metrics-server has no such API, and
-# the 403 must degrade report enrichment rather than fail the replay. That
-# fallback lives in the collector/report reader, not here.
+# Opt-in, and OFF by default, for the same reason the inspector's identical rule
+# is (inspector.metricsEnabled): Kubernetes RBAC escalation prevention forbids
+# creating a Role granting a permission the installer does not itself hold, so a
+# namespace-admin customer installing this chart cannot create this rule -- and
+# on a cluster with no metrics-server the metrics.k8s.io API group does not
+# exist, so nobody can. Ungated, this one rule made the whole chart
+# uninstallable for its target user.
+#
+# It is optional in practice anyway: a 403 (or a missing API) must degrade
+# report enrichment rather than fail the replay, and that fallback lives in the
+# collector/report reader, not here. build.StaticReplayRuntimeRules()
+# (lib/kube/build/rbac.go) documents the same optionality; a default render is
+# therefore a deliberate subset of that rule list, not drift.
 - apiGroups:
   - metrics.k8s.io
   resources:
@@ -1104,7 +1141,7 @@ spec:
     metadata:
       annotations:
         example.com/owner: platform-team
-        checksum/config: '6e6530625dded5eafe32b50c2d54cde15b9bc145cf25fd64ef20e40fce6ee4c0'
+        checksum/config: '914d339a7f3f50da983dd77987b63d6b9a425313d37cc07a2f577fe5b491ebb5'
       labels:
         example.com/team: platform
         app: speedscale-replay-coordinator
@@ -1566,8 +1603,15 @@ spec:
       - name: cleanup
         image: 'gcr.io/speedscale/operator:v9.9.9'
         imagePullPolicy: 'IfNotPresent'
+        # /app, not /speedscale/operator: every Speedscale image built by
+        # tools/build/Dockerfile.default COPYs the binary to the fixed path /app
+        # and sets ENTRYPOINT ["/app"] (the entrypoint cannot expand build args,
+        # so the binary is renamed on the way in). The operator project has no
+        # Dockerfile of its own, so it uses that default. A wrong command path
+        # here is invisible until uninstall time and then fails as StartError
+        # 128 with zero container logs, leaving the release permanently stuck.
         command:
-        - /speedscale/operator
+        - /app
         args:
         - namespaced-cleanup
         - --namespace

@@ -73,6 +73,7 @@ replayCoordinator:
 
 replayRuntime:
   enabled: true
+  metricsEnabled: true
 
 capture:
   forwarderServiceName: speedscale-forwarder

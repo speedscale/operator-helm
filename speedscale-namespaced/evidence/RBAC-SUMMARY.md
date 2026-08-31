@@ -117,12 +117,12 @@ model anyway.
 
 The identity the replay's own pods run as: generator, responder, collector.
 
-| API group | Resources | Verbs |
-|---|---|---|
-| metrics.k8s.io | `pods` | get, list, watch |
-| core | `pods` | get, list, watch |
-| core | `events` | get, list, watch |
-| core | `pods/log` | get, list |
+| API group | Resources | Verbs | Gated by |
+|---|---|---|---|
+| core | `pods` | get, list, watch | always |
+| core | `events` | get, list, watch | always |
+| core | `pods/log` | get, list | always |
+| metrics.k8s.io | `pods` | get, list, watch | `replayRuntime.metricsEnabled` (default **off**) |
 
 These four rules are a transcription of `build.StaticReplayRuntimeRules()` in
 `lib/kube/build/rbac.go`. `lib/kube/build/rbac_test.go` pins them against
@@ -133,10 +133,37 @@ apart, and collector/report enrichment behaves identically under either path.
 Rendering this Role once per namespace, instead of provisioning it per
 ephemeral replay, is what lets the coordinator hold no RBAC-write verbs at all.
 
-`metrics.k8s.io` access is best-effort: a cluster without the metrics API simply
-does not authorize it, and the consumer degrades rather than failing the replay.
-
 **No Secret access. No write verbs. No wildcard API groups.**
+
+---
+
+## Metrics enrichment is opt-in, in both Roles
+
+Two Roles in this chart can carry a `metrics.k8s.io/pods` read rule — the
+inspector's (§2) and the replay runtime's (§4). Both are behind a value
+(`inspector.metricsEnabled`, `replayRuntime.metricsEnabled`) and **both default
+to off**. A default render of this chart grants no `metrics.k8s.io` access
+anywhere.
+
+That default is a correctness requirement, not a hardening preference:
+
+* **Kubernetes RBAC escalation prevention.** The API server refuses to let a
+  subject create a `Role` containing a permission the subject does not already
+  hold in that namespace (and cannot cover with an `escalate` grant). A
+  namespace-admin customer — the exact user this chart exists for — is not
+  normally granted `metrics.k8s.io/pods`, so an unconditional rule makes
+  `helm install` fail outright at Role creation. This was observed in the kind
+  E2E: the ungated rule in the replay-runtime Role made the chart impossible for
+  a namespace-scoped credential to install at all.
+* **On a cluster with no metrics-server the API group does not exist**, so the
+  rule cannot be satisfied by any identity, however privileged.
+
+Turning either on is safe only where the installing identity already holds that
+read. Leaving both off costs per-pod CPU/memory enrichment in reports and
+nothing more: `build.StaticReplayRuntimeRules()` documents the same optionality,
+and the consumer (collector / report reader) degrades on a 403 or a missing API
+rather than failing the replay. A default render is therefore a deliberate
+subset of that rule list, not drift from it.
 
 ---
 
@@ -161,10 +188,17 @@ unattended at the least convenient moment:
   signals and reports, it does not garbage-collect.
 * **No Secret access.**
 
-The cleanup entrypoint itself ships under **S-12933**. The Job renders today
-against a documented placeholder command (`operator namespaced-cleanup`), marked
-as such in `templates/uninstall.yaml`, so the hook wiring, the RBAC and the
-timeout are reviewable before the logic lands.
+The cleanup entrypoint is the operator image's `namespaced-cleanup` subcommand
+(**S-12933**). The Job invokes it as `/app namespaced-cleanup` — `/app` because
+that is where `tools/build/Dockerfile.default` places every Speedscale binary
+and what its `ENTRYPOINT` names. A wrong path here does not surface until
+uninstall time and then fails as a `StartError` with no container logs, leaving
+the release undeletable; the kind E2E found exactly that.
+
+A failed hook Job is left behind on purpose (`ttlSecondsAfterFinished` only
+reaps successful Jobs, and Helm does not remove the hook resources of a release
+it did not delete) so its pod logs survive as the record of why the uninstall
+refused. See "Cleaning up after a failed uninstall hook" in the README.
 
 ---
 

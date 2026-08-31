@@ -156,9 +156,22 @@ data:
   # downward-API env var on the Deployment, below).
   CLUSTER_NAME: 'my-cluster'
   LOG_LEVEL: 'info'
-  PROCESS_ID: 'my-cluster-speedscale'
+  # INSTANCE_ID, not PROCESS_ID. This ConfigMap feeds the OPERATOR binary, whose
+  # settings field is `mapstructure:"instance_id"` -> INSTANCE_ID (viper
+  # AutomaticEnv), and Settings.Validate() makes a blank InstanceID a FATAL
+  # startup error ("InstanceID: cannot be blank"). PROCESS_ID is the FORWARDER's
+  # and inspector's name for the same id (lib/kube/build/forwarder.go,
+  # inspector.go, forwarder/stats/stats.go) -- those ConfigMaps keep it, and the
+  # parity harness asserts the two match. Same value, two binaries, two names.
+  INSTANCE_ID: 'my-cluster-speedscale'
   CONTAINER_REGISTRY: 'gcr.io/speedscale'
-  CONTAINER_TYPE: 'v2.5.878'
+  # IMAGE_TAG, not CONTAINER_TYPE, for the same reason: the operator reads
+  # `mapstructure:"image_tag"` and defaults it to "latest" when unset, so the
+  # pinned .Values.image.tag was being silently discarded and every replay
+  # component came up on :latest. operator/controllers/operator_configmap.go's
+  # propagatedKeys map is the canonical statement of the rename
+  # (IMAGE_TAG -> CONTAINER_TYPE) as a value crosses from operator to forwarder.
+  IMAGE_TAG: 'v2.5.878'
   IMAGE_PULL_POLICY: 'Always'
   # Names the installation provisioned. Config.Names exists precisely so a
   # namespaced install pins nothing to a cluster-wide default.
@@ -173,9 +186,23 @@ data:
   RESYNC_INTERVAL: "10s"
   PROVISIONING_TIMEOUT: "1m0s"
   # Cloud-issued tenant identity; same S-12914 hole as the forwarder's.
+  #
+  # ALL SIX keys, not three. The operator resolves its tenant identity from
+  # settings.updateTenant() -> schema.SubTenant.Incomplete(), which is false
+  # only when Stream, and the root Tenant's ID, Name, Region AND Bucket are all
+  # non-empty (lib/schema/tenant.go). Rendering only ID/Name/SubTenantName left
+  # the identity permanently incomplete, so the documented "supply tenant.* by
+  # hand" escape hatch could never actually work. The operator's env names for
+  # these happen to match the forwarder's, but they are read through the
+  # operator's own mapstructure tags (tenant_id, tenant_name, tenant_bucket,
+  # tenant_region, sub_tenant_name, sub_tenant_stream in operator/settings) --
+  # not inherited from the forwarder ConfigMap.
   TENANT_ID: ''
   TENANT_NAME: ''
+  TENANT_BUCKET: ''
+  TENANT_REGION: ''
   SUB_TENANT_NAME: 'default'
+  SUB_TENANT_STREAM: ''
 
 ---
 # Source: speedscale-namespaced/templates/forwarder-rbac.yaml
@@ -401,17 +428,6 @@ metadata:
     app: speedscale
     controlplane.speedscale.com/component: replay-runtime
 rules:
-# Optional in practice: a cluster with no metrics-server has no such API, and
-# the 403 must degrade report enrichment rather than fail the replay. That
-# fallback lives in the collector/report reader, not here.
-- apiGroups:
-  - metrics.k8s.io
-  resources:
-  - pods
-  verbs:
-  - get
-  - list
-  - watch
 - apiGroups:
   - ""
   resources:
@@ -796,7 +812,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 'b4eb320a92fba612b7579e583c2af4b8d97e1579903373e25b2a4ca3580628f3'
+        checksum/config: 'c599b2eef9a53e21bd9e12bf1f66bc772fcc5f77a0311d9d06e63b62a7282bff'
       labels:
         app: speedscale-replay-coordinator
         controlplane.speedscale.com/component: replay-coordinator
@@ -1042,8 +1058,15 @@ spec:
       - name: cleanup
         image: 'gcr.io/speedscale/operator:v2.5.878'
         imagePullPolicy: 'Always'
+        # /app, not /speedscale/operator: every Speedscale image built by
+        # tools/build/Dockerfile.default COPYs the binary to the fixed path /app
+        # and sets ENTRYPOINT ["/app"] (the entrypoint cannot expand build args,
+        # so the binary is renamed on the way in). The operator project has no
+        # Dockerfile of its own, so it uses that default. A wrong command path
+        # here is invisible until uninstall time and then fails as StartError
+        # 128 with zero container logs, leaving the release permanently stuck.
         command:
-        - /speedscale/operator
+        - /app
         args:
         - namespaced-cleanup
         - --namespace

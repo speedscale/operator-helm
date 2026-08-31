@@ -3,14 +3,32 @@ speedscale-namespaced {{ .Chart.Version }} installed into namespace {{ .Release.
 Everything this release created is namespace-scoped. Nothing outside
 {{ .Release.Namespace }} was read, written or granted.
 
-{{- if not .Values.tenant.id }}
+{{- if or (not .Values.tenant.id) (not .Values.tenant.name) (not .Values.tenant.bucket) (not .Values.tenant.region) (not .Values.tenant.stream) }}
 
-WARNING: tenant.id is empty.
+WARNING: tenant identity is incomplete. Missing:
+{{- if not .Values.tenant.id }}
+  - tenant.id
+{{- end }}
+{{- if not .Values.tenant.name }}
+  - tenant.name
+{{- end }}
+{{- if not .Values.tenant.bucket }}
+  - tenant.bucket
+{{- end }}
+{{- if not .Values.tenant.region }}
+  - tenant.region
+{{- end }}
+{{- if not .Values.tenant.stream }}
+  - tenant.stream
+{{- end }}
 
   Tenant identity (id / name / bucket / region / stream) is issued by the
   Speedscale cloud in exchange for the API key, so a chart cannot compute it.
-  The forwarder will not become ready until it is supplied. S-12914 owns how a
-  namespaced install resolves this; until then, set it explicitly:
+  Neither the forwarder nor the replay coordinator will become ready until ALL
+  FIVE are supplied -- a partial set counts as none, because the identity is
+  considered resolved only when the stream and every root-tenant field are
+  non-empty. S-12914 owns how a namespaced install resolves this; until then,
+  set them explicitly, together:
 
     helm upgrade {{ .Release.Name }} -n {{ .Release.Namespace }} \
       --set tenant.id=... --set tenant.name=... --set tenant.bucket=... \

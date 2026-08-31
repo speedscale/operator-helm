@@ -246,12 +246,22 @@ mode proves each check fires against a deliberately broken fixture.
 
 * **Tenant identity.** `tenant.*` is issued by the Speedscale cloud in exchange
   for the API key at startup, so no value exists when `helm template` runs. It
-  renders empty and the forwarder will not become ready until supplied.
-  **S-12914** owns how a namespaced install resolves it.
+  renders empty and neither the forwarder nor the replay coordinator will become
+  ready until it is supplied. All five fields (id, name, bucket, region, stream)
+  must be set together — the components treat a partial set as no identity at
+  all. **S-12914** owns how a namespaced install resolves it.
 * **Namespaced-mode switch.** The coordinator Deployment sets
-  `SPEEDSCALE_NAMESPACED_MODE=true`. That name is this chart's proposal and must
-  be confirmed against the startup path landing under **S-12919**.
-* **Uninstall entrypoint.** The `pre-delete` Job invokes `operator
-  namespaced-cleanup`, which does not exist yet — it ships under **S-12933**.
-  Until then the Job fails, which blocks `helm uninstall` unless
-  `uninstall.forceCleanupOnUninstall=true` or `uninstall.enabled=false`.
+  `SPEEDSCALE_NAMESPACED_MODE=true`, which is read by `operator/settings`
+  (`mapstructure:"speedscale_namespaced_mode"`) and selects the namespaced
+  startup path. Confirmed against the **S-12919** startup path.
+* **Uninstall entrypoint.** The `pre-delete` Job invokes the operator image's
+  `namespaced-cleanup` subcommand (**S-12933**) at `/app`, the fixed binary path
+  every Speedscale image uses. An image older than that subcommand exits
+  non-zero, which blocks `helm uninstall` unless
+  `uninstall.forceCleanupOnUninstall=true` or `uninstall.enabled=false`. A
+  failed hook Job is not auto-reaped — see the README for how to clear it.
+* **Metrics enrichment is opt-in.** No `metrics.k8s.io` grant appears in a
+  default render. Both places that can grant it (`inspector.metricsEnabled`,
+  `replayRuntime.metricsEnabled`) default to off, because RBAC escalation
+  prevention stops a namespace admin who lacks that read from creating a Role
+  that grants it. See RBAC-SUMMARY.md.
