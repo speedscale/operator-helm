@@ -37,6 +37,17 @@ rules:
   - update
   - patch
   - delete
+# The self-check's component readiness probe reads Endpoints for the
+# forwarder/inspector Services; without this it warns on every start
+# (observed as 12x 403 in the kind E2E).
+- apiGroups:
+  - ""
+  resources:
+  - endpoints
+  verbs:
+  - get
+  - list
+  - watch
 # The responder Service a replay stands up, whose cluster IP the injection
 # needs.
 - apiGroups:

@@ -50,6 +50,21 @@ spec:
       - name: speedscale-replay-coordinator
         image: '{{ .Values.image.registry }}/operator:{{ .Values.image.tag }}'
         imagePullPolicy: '{{ .Values.image.pullPolicy }}'
+        ports:
+        - name: health
+          containerPort: 8081
+        # Liveness only: `/` answers 200 whenever the process is up, degraded
+        # or not, so a hung process restarts but a by-design cloud-degraded
+        # install does not flap. `/readyz` (503 while degraded) is deliberately
+        # NOT wired as a readinessProbe yet - nothing routes traffic to this
+        # pod, and marking a degraded install NotReady forever would alarm
+        # without protecting anything. Readiness semantics are S-12949.
+        livenessProbe:
+          httpGet:
+            path: /
+            port: health
+          initialDelaySeconds: 10
+          periodSeconds: 20
         env:
         # This is the switch that selects the namespaced startup path
         # (operator/replaycoordinator.Runtime) over the classic
