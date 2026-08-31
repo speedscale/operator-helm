@@ -176,6 +176,10 @@ data:
   # Names the installation provisioned. Config.Names exists precisely so a
   # namespaced install pins nothing to a cluster-wide default.
   API_KEY_SECRET_NAME: 'speedscale-apikey'
+  # The static replay-runtime ServiceAccount (S-12897 F5): when set, the
+  # coordinator points generator/responder/collector pods at this account and
+  # creates no per-replay RBAC - which its Role could not create anyway.
+  SPEEDSCALE_REPLAY_RUNTIME_SERVICE_ACCOUNT: 'speedscale'
   TLS_SECRET_NAME: 'speedscale-certs'
   # Capture wiring handed to instrumented workloads. capture.enableDiagnostics
   # is deliberately NOT rendered here: build.SidecarConfigOverride has no field
@@ -812,7 +816,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 'c599b2eef9a53e21bd9e12bf1f66bc772fcc5f77a0311d9d06e63b62a7282bff'
+        checksum/config: '13fea36ae0f93625f834fe3629db53a1f226041a0a04321651fb91f99db81353'
       labels:
         app: speedscale-replay-coordinator
         controlplane.speedscale.com/component: replay-coordinator

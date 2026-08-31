@@ -369,6 +369,10 @@ data:
   # Names the installation provisioned. Config.Names exists precisely so a
   # namespaced install pins nothing to a cluster-wide default.
   API_KEY_SECRET_NAME: 'speedscale-apikey'
+  # The static replay-runtime ServiceAccount (S-12897 F5): when set, the
+  # coordinator points generator/responder/collector pods at this account and
+  # creates no per-replay RBAC - which its Role could not create anyway.
+  SPEEDSCALE_REPLAY_RUNTIME_SERVICE_ACCOUNT: 'speedscale'
   TLS_SECRET_NAME: 'speedscale-certs'
   JKS_SECRET_NAME: 'speedscale-jks'
   # Capture wiring handed to instrumented workloads. capture.enableDiagnostics
@@ -1141,7 +1145,7 @@ spec:
     metadata:
       annotations:
         example.com/owner: platform-team
-        checksum/config: '914d339a7f3f50da983dd77987b63d6b9a425313d37cc07a2f577fe5b491ebb5'
+        checksum/config: 'd5afd3e0d200662ca8db9157ecf8ecaf2cdbe0d1d11623ab4a8eed88293fb5f2'
       labels:
         example.com/team: platform
         app: speedscale-replay-coordinator

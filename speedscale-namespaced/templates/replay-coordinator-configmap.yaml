@@ -50,6 +50,10 @@ data:
   # Names the installation provisioned. Config.Names exists precisely so a
   # namespaced install pins nothing to a cluster-wide default.
   API_KEY_SECRET_NAME: '{{ include "speedscale.apiKeySecretName" . }}'
+  # The static replay-runtime ServiceAccount (S-12897 F5): when set, the
+  # coordinator points generator/responder/collector pods at this account and
+  # creates no per-replay RBAC - which its Role could not create anyway.
+  SPEEDSCALE_REPLAY_RUNTIME_SERVICE_ACCOUNT: '{{ include "speedscale.replayRuntimeName" . }}'
   TLS_SECRET_NAME: '{{ include "speedscale.certsSecretName" . }}'
   {{- if .Values.tls.createJKS }}
   JKS_SECRET_NAME: '{{ .Values.tls.jksSecret | default "speedscale-jks" }}'
