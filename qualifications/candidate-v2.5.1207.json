@@ -1,0 +1,24 @@
+{
+  "chartSHA256": "91f050157ffdf7ab547fe3b4c11a5ab73762c338b9d28203ba9d8dec99bdd920",
+  "images": {
+    "collector": "gcr.io/speedscale/collector@sha256:f1c0a53ba31c8cca6217be6ab9c5b1623bd4af5c35e0712e8accd228c24ec975",
+    "forwarder": "gcr.io/speedscale/forwarder@sha256:52b4001493a89def3c00ab77aea493405f0e7658d6f9032a2ffac12f37c36abb",
+    "generator": "gcr.io/speedscale/generator@sha256:307743b02e5a0256ee99b579bacdf888102c8605d1b015787898dd36c037f6f7",
+    "goproxy": "gcr.io/speedscale/goproxy@sha256:ba8fdd96c0848c8b21a1adbb57043f100d5430eb58b483881ddd7787b6013d6a",
+    "inspector": "gcr.io/speedscale/inspector@sha256:8f10dc31e1dd5555f4271cbddde916f03fca12785780a26eb4218ce541e02867",
+    "nettap": "gcr.io/speedscale/nettap@sha256:6b7b3067b442f2f1d7ac4ddd85b97acddf53946cf89ed96481c334b4bc3943a3",
+    "operator": "gcr.io/speedscale/operator@sha256:cd2d19022393883d1258bace94cfa036e4ff8c857a4bd31688025991af4dd74e",
+    "responder": "gcr.io/speedscale/responder@sha256:c4f540800690e231698264c1febf724d2eaabb308125e03203415646b45c2244"
+  },
+  "sources": [
+    "v2.5.1206"
+  ],
+  "verifiedSource": true,
+  "verifiedUpgrade": true,
+  "verifiedRecovery": true,
+  "killedWorker": true,
+  "badTarget": true,
+  "cloudDisconnected": true,
+  "registryRecovery": true,
+  "webhookFunctional": true
+}
