@@ -1,0 +1,22 @@
+{
+  "contract": "1",
+  "releases": [
+    {
+      "version": "v2.5.1206",
+      "chartVersion": "2.5.1206",
+      "url": "https://speedscale.github.io/operator-helm/charts/speedscale-operator-2.5.1206.tgz",
+      "sha256": "b42f640774e348573738a470b3927ee2a93e4d5649b18c582de886601352e0cd",
+      "from": [],
+      "images": {
+        "collector": "gcr.io/speedscale/collector@sha256:bf2f616e707e827001b97f4a9d0b09fcd3e5a9ed22d485baa2cbb6b85e1c7eac",
+        "forwarder": "gcr.io/speedscale/forwarder@sha256:366020fadae73e3fe650e06240ba62df0322d00330b457d8b26e66f0a2b4a8db",
+        "generator": "gcr.io/speedscale/generator@sha256:b55d393fc5c53d24e3701aadcf17bc3669edac9f200431536548b7af2c20bdbd",
+        "goproxy": "gcr.io/speedscale/goproxy@sha256:056a6b1ffbc3c781b30880d56dda5d63a9e0e06dc710a677f942333c85a2cb32",
+        "inspector": "gcr.io/speedscale/inspector@sha256:bd3d57f42127d05e20c2d2028ed390be6af37140cb99e49e968e3727768823f9",
+        "nettap": "gcr.io/speedscale/nettap@sha256:6b7b3067b442f2f1d7ac4ddd85b97acddf53946cf89ed96481c334b4bc3943a3",
+        "operator": "gcr.io/speedscale/operator@sha256:dd72b93580124dd1fb926da0d566a3c509c2e72ba4b247df62e83f94771f3d55",
+        "responder": "gcr.io/speedscale/responder@sha256:22b504ee2a3e0b887b8df0545c057496aa5cf4e6c098d314b30d42ca0544d2c8"
+      }
+    }
+  ]
+}
