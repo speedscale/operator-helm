@@ -35,7 +35,7 @@ cloudProvider: ""
 # Speedscale default component image settings
 image:
   registry: gcr.io/speedscale
-  tag: v2.5.1206
+  tag: v2.5.1220
   pullPolicy: Always
   digest: ""
   # Existing registry credentials as [{name: my-regcred}]. Required in the install namespace and in
@@ -45,7 +45,7 @@ image:
 # Individual tags to be used by specific components. If specified here, the operator will use the given tag
 # when creating resources with that component. If not specified, the above default is used.
 imageTags:
-  nettap: v0.1.90
+  nettap: v0.1.93
 
 # Log level for Speedscale components.
 logLevel: "info"
@@ -465,7 +465,7 @@ namespaced:
 
   image:
     registry: gcr.io/speedscale
-    tag: "v2.5.1206"
+    tag: "v2.5.1220"
     pullPolicy: Always
     # References to pre-existing image pull Secrets, e.g. [{name: my-regcred}].
     pullSecrets: []
@@ -690,8 +690,11 @@ namespaced:
     createJKS: false
     jksSecret: "speedscale-jks"
     jks:
-      # Image carrying keytool + kubectl. Pulled from .Values.image.registry.
+      # Java 11+ runtime image, pulled from .Values.image.registry. The Job runs it under
+      # globalPodSecurityContext, so its trust store must be readable by that UID.
       image: "amazoncorretto:23"
+      # Trust store the keystore starts from. Empty uses java.home/lib/security/cacerts (password changeit).
+      truststorePath: ""
       resources:
         limits:
           cpu: "1"
