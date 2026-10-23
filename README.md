@@ -28,6 +28,8 @@ _See [helm repo](https://helm.sh/docs/helm/helm_repo/) for command documentation
 
 An API key is required. Sign up for a [free Speedscale trial](https://speedscale.com/free-trial/) if you do not have one.
 
+> For Kubernetes deployments, use a service account API key from [Tenant Settings](https://app.speedscale.com/tenant) instead of a personal key, so cluster access is not tied to an employee's account. Ask a tenant admin to create one if needed.
+
 ```bash
 helm install speedscale-operator speedscale/speedscale-operator \
 	-n speedscale \
