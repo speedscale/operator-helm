@@ -1,0 +1,36 @@
+annotations:
+  catalog.cattle.io/certified: partner
+  catalog.cattle.io/display-name: Speedscale Operator
+  catalog.cattle.io/release-name: speedscale-operator
+  speedscale.com/operator-images: '{"operator": "gcr.io/speedscale/operator@sha256:260c8e8caf318032debe6e9fc780bdc483b5e355bdeae0183a193b3801e2a934",
+    "inspector": "gcr.io/speedscale/inspector@sha256:f5f6116d07431be20c05fbe3bf7371b2824cdb989fa9abbab04ff1c231bdc8d5",
+    "forwarder": "gcr.io/speedscale/forwarder@sha256:edb7117679c647ab04ef04654964b0bb229f2db06ed80f166761482e72a56797",
+    "collector": "gcr.io/speedscale/collector@sha256:487bbd022a56caf436ce6f48878a5b8c77b79a4620c44a491311d0261649ddda",
+    "generator": "gcr.io/speedscale/generator@sha256:03500175a52559643ccbf5a2268adf096ee1647175aaa4d457db4467e68bd334",
+    "responder": "gcr.io/speedscale/responder@sha256:d0bcaa635b04d10c8dfda9c1d8303dee2e9845ecf624e3621a75b65a1faf4917",
+    "goproxy": "gcr.io/speedscale/goproxy@sha256:06ea9b6d2c10db2f0b7d706976a6908f09c76a3bb6bfbc221cfcfcc2b2a88e28",
+    "nettap": "gcr.io/speedscale/nettap@sha256:c47c4f4e44b1a6764e8e60461be8fb4b8f3bd61596595ece9d17d74c78732891"}'
+  speedscale.com/operator-release-keys: '["29neKZX4THWSuO42SHYzATFQYiWYTPSlJ0FJ312mE58="]'
+  speedscale.com/operator-upgrade-contract: "2"
+apiVersion: v1
+appVersion: 2.5.1250
+description: Stress test your APIs with real world scenarios.  Collect and replay
+  traffic without scripting.
+home: https://speedscale.com
+icon: https://raw.githubusercontent.com/speedscale/assets/main/logo/gold_logo_only.png
+keywords:
+- speedscale
+- test
+- testing
+- regression
+- reliability
+- load
+- replay
+- network
+- traffic
+kubeVersion: '>= 1.17.0-0'
+maintainers:
+- email: support@speedscale.com
+  name: Speedscale Support
+name: speedscale-operator
+version: 2.5.1250
