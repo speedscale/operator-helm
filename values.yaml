@@ -35,7 +35,7 @@ cloudProvider: ""
 # Speedscale default component image settings
 image:
   registry: gcr.io/speedscale
-  tag: v2.5.1274
+  tag: v2.5.1322
   pullPolicy: Always
   digest: ""
   # Existing registry credentials as [{name: my-regcred}]. Required in the install namespace and in
@@ -45,7 +45,7 @@ image:
 # Individual tags to be used by specific components. If specified here, the operator will use the given tag
 # when creating resources with that component. If not specified, the above default is used.
 imageTags:
-  nettap: v0.1.95
+  nettap: v0.1.99
 
 # Log level for Speedscale components.
 logLevel: "info"
@@ -275,6 +275,17 @@ collector:
 
 replayComponents:
   generator:
+    # Label selectors for the existing service accounts a test config's cluster.generatorServiceAccount may
+    # run the generator as. The generator then carries that account's cloud workload identity, and whoever
+    # edits test configs can use it. An account matching any selector is allowed. No selectors allows none;
+    # an empty selector ({}) allows every account in every replay namespace.
+    #
+    #   serviceAccountSelectors:
+    #     - matchLabels:
+    #         speedscale.com/replay-generator: "true"
+    #     - matchExpressions:
+    #         - {key: team, operator: In, values: [retail, payments]}
+    serviceAccountSelectors: []
     resources:
       limits:
         cpu: "8"
@@ -464,7 +475,7 @@ namespaced:
 
   image:
     registry: gcr.io/speedscale
-    tag: "v2.5.1274"
+    tag: "v2.5.1322"
     pullPolicy: Always
     # References to pre-existing image pull Secrets, e.g. [{name: my-regcred}].
     pullSecrets: []
@@ -503,11 +514,11 @@ namespaced:
   tolerations: []
   nodeSelector: {}
 
-  # Extra namespaces the inspector reports on. The release namespace is always
-  # appended by the chart, so an empty list still sees the install's own
-  # namespace. NOTE: this chart grants no RBAC outside .Release.Namespace, so
-  # naming another namespace here only has an effect if you separately grant the
-  # inspector ServiceAccount access to it.
+  # Additional namespaces for forwarder workload-memory collection. The release
+  # namespace is always included. Each extra namespace must separately grant the
+  # forwarder ServiceAccount list access to Pods; this chart renders local RBAC only.
+  # All forwarder replicas for a cluster must use the same namespace set.
+  # The strict namespaced inspector remains confined to the release namespace.
   namespaceSelector: []
 
   # Secrets the install may read for test variable substitution. Empty means the
@@ -609,6 +620,17 @@ namespaced:
     # so nobody can. Leaving it ungated made the chart impossible to install for
     # exactly the user it is written for. Enrichment degrades without it.
     metricsEnabled: false
+    # Label selectors for the existing service accounts in this namespace that a test config's
+    # cluster.generatorServiceAccount may run the generator as. The generator then carries that account's
+    # permissions and cloud workload identity, and whoever edits test configs can use them. An account matching
+    # any selector is allowed. No selectors allows none; an empty selector ({}) allows every account. Only an
+    # inline test config can name an account. Setting any selector adds a read-only serviceaccounts rule to the
+    # replay coordinator's Role.
+    #
+    #   generatorServiceAccountSelectors:
+    #     - matchLabels:
+    #         speedscale.com/replay-generator: "true"
+    generatorServiceAccountSelectors: []
 
   # Traffic capture (sidecar / init container) settings the coordinator hands to
   # workloads it instruments.
