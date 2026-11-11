@@ -35,7 +35,7 @@ cloudProvider: ""
 # Speedscale default component image settings
 image:
   registry: gcr.io/speedscale
-  tag: v2.5.1322
+  tag: v2.5.1373
   pullPolicy: Always
   digest: ""
   # Existing registry credentials as [{name: my-regcred}]. Required in the install namespace and in
@@ -475,7 +475,7 @@ namespaced:
 
   image:
     registry: gcr.io/speedscale
-    tag: "v2.5.1322"
+    tag: "v2.5.1373"
     pullPolicy: Always
     # References to pre-existing image pull Secrets, e.g. [{name: my-regcred}].
     pullSecrets: []
