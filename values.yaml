@@ -35,7 +35,7 @@ cloudProvider: ""
 # Speedscale default component image settings
 image:
   registry: gcr.io/speedscale
-  tag: v2.5.1373
+  tag: v2.5.1386
   pullPolicy: Always
   digest: ""
   # Existing registry credentials as [{name: my-regcred}]. Required in the install namespace and in
@@ -45,7 +45,7 @@ image:
 # Individual tags to be used by specific components. If specified here, the operator will use the given tag
 # when creating resources with that component. If not specified, the above default is used.
 imageTags:
-  nettap: v0.1.99
+  nettap: v0.1.101
 
 # Log level for Speedscale components.
 logLevel: "info"
@@ -312,10 +312,10 @@ replayComponents:
         cpu: 500m
         memory: 250M
 
-# BETA: enable ebpf-based, proxyless traffic capture. To configure, change the capture targets list below to
+# enable ebpf-based, proxyless traffic capture. To configure, change the capture targets list below to
 # the desired namespace and pod selector
 ebpf:
-  enabled: false
+  enabled: true
   # nettap uses file capabilities to load BPF programs and inspect other processes without UID 0.
   nettap:
     capture:
@@ -475,7 +475,7 @@ namespaced:
 
   image:
     registry: gcr.io/speedscale
-    tag: "v2.5.1373"
+    tag: "v2.5.1386"
     pullPolicy: Always
     # References to pre-existing image pull Secrets, e.g. [{name: my-regcred}].
     pullSecrets: []
