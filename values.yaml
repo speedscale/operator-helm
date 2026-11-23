@@ -35,8 +35,10 @@ cloudProvider: ""
 # Speedscale default component image settings
 image:
   registry: gcr.io/speedscale
-  tag: v2.5.1437
-  pullPolicy: Always
+  tag: v2.5.1476
+  # Always, IfNotPresent or Never. Empty follows the image tag, as Kubernetes does: a version tag is pulled
+  # only when the node does not have it, and latest is pulled every time.
+  pullPolicy: ""
   digest: ""
   # Existing registry credentials as [{name: my-regcred}]. Required in the install namespace and in
   # every namespace that receives injected sidecars or replay components.
@@ -475,7 +477,7 @@ namespaced:
 
   image:
     registry: gcr.io/speedscale
-    tag: "v2.5.1437"
+    tag: "v2.5.1476"
     pullPolicy: Always
     # References to pre-existing image pull Secrets, e.g. [{name: my-regcred}].
     pullSecrets: []
