@@ -35,7 +35,7 @@ cloudProvider: ""
 # Speedscale default component image settings
 image:
   registry: gcr.io/speedscale
-  tag: v2.5.1476
+  tag: v2.5.1505
   # Always, IfNotPresent or Never. Empty follows the image tag, as Kubernetes does: a version tag is pulled
   # only when the node does not have it, and latest is pulled every time.
   pullPolicy: ""
@@ -47,7 +47,7 @@ image:
 # Individual tags to be used by specific components. If specified here, the operator will use the given tag
 # when creating resources with that component. If not specified, the above default is used.
 imageTags:
-  nettap: v0.1.106
+  nettap: v0.1.109
 
 # Log level for Speedscale components.
 logLevel: "info"
@@ -477,7 +477,7 @@ namespaced:
 
   image:
     registry: gcr.io/speedscale
-    tag: "v2.5.1476"
+    tag: "v2.5.1505"
     pullPolicy: Always
     # References to pre-existing image pull Secrets, e.g. [{name: my-regcred}].
     pullSecrets: []
